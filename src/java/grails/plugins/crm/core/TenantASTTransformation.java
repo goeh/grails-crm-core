@@ -52,27 +52,28 @@ public class TenantASTTransformation implements ASTTransformation {
                 if (!GrailsASTUtils.hasOrInheritsProperty(theClass, "tenantId")) {
                     System.out.println("Adding tenantId field to class " + theClass.getName());
                     theClass.addProperty("tenantId", Modifier.PUBLIC, ClassHelper.Long_TYPE, createTenantMethodCall(), null, null);
-                }
 
-                Statement tenantConstraintExpression = createLongConstraint("tenantId", false);
+                    Statement tenantConstraintExpression = createLongConstraint("tenantId", false);
 
-                PropertyNode constraints = theClass.getProperty("constraints");
-                if (constraints != null) {
-                    System.out.println("Adding tenantId to existing constraints closure for class " + theClass.getName());
-                    if (constraints.getInitialExpression() instanceof ClosureExpression) {
-                        ClosureExpression ce = (ClosureExpression) constraints.getInitialExpression();
-                        ((BlockStatement) ce.getCode()).addStatement(tenantConstraintExpression);
+                    PropertyNode constraints = theClass.getProperty("constraints");
+                    if (constraints != null) {
+                        System.out.println("Adding tenantId to existing constraints closure for class " + theClass.getName());
+                        if (constraints.getInitialExpression() instanceof ClosureExpression) {
+                            ClosureExpression ce = (ClosureExpression) constraints.getInitialExpression();
+                            ((BlockStatement) ce.getCode()).addStatement(tenantConstraintExpression);
+                        } else {
+                            System.out.println("Do not know how to add constraints expression to non ClosureExpression " + constraints.getInitialExpression());
+                        }
                     } else {
-                        System.out.println("Do not know how to add constraints expression to non ClosureExpression " + constraints.getInitialExpression());
-                    }
-                } else {
-                    System.out.println("Adding tenantId and constraints closure for class " + theClass.getName());
-                    Statement[] constraintsStatement = {tenantConstraintExpression};
-                    BlockStatement closureBlock = new BlockStatement(constraintsStatement, null);
-                    ClosureExpression constraintsClosure = new ClosureExpression(null, closureBlock);
-                    theClass.addProperty("constraints", Modifier.STATIC | Modifier.PUBLIC, ClassHelper.OBJECT_TYPE, constraintsClosure, null, null);
+                        System.out.println("Adding tenantId and constraints closure for class " + theClass.getName());
+                        Statement[] constraintsStatement = {tenantConstraintExpression};
+                        BlockStatement closureBlock = new BlockStatement(constraintsStatement, null);
+                        ClosureExpression constraintsClosure = new ClosureExpression(null, closureBlock);
+                        theClass.addProperty("constraints", Modifier.STATIC | Modifier.PUBLIC, ClassHelper.OBJECT_TYPE, constraintsClosure, null, null);
 
+                    }
                 }
+
                 VariableScopeVisitor scopeVisitor = new VariableScopeVisitor(sourceUnit);
                 scopeVisitor.visitClass(theClass);
             }

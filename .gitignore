@@ -1,0 +1,14 @@
+# Ignore Intellij IDEA files
+.idea
+*.iml
+
+# Ignore build artifacts
+target
+
+# Ignore packaged plugins
+*.zip
+
+# Ignore stacktrace.log
+stacktrace.log
+
+#	plugin.xml
