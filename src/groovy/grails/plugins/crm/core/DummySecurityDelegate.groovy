@@ -39,7 +39,11 @@ class DummySecurityDelegate {
     Long tenant = 0L
 
     boolean isAuthenticated() {
-        true
+        enabled
+    }
+
+    boolean isPermitted(permission) {
+        enabled
     }
 
     def runAs(String username, Closure closure) {
@@ -59,5 +63,30 @@ class DummySecurityDelegate {
 
     List getTenants() {
         [getCurrentTenant()]
+    }
+
+    boolean isValidTenant(Long tenantId) {
+        true
+    }
+
+    private static final int hashIterations = 1000
+
+    def hashPassword(String password, byte[] salt) {
+        //password.encodeAsSHA256()
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        digest.reset()
+        digest.update(salt)
+        byte[] input = digest.digest(password.getBytes("UTF-8"))
+        for (int i = 0; i < hashIterations; i++) {
+            digest.reset()
+            input = digest.digest(input)
+        }
+        return input.encodeHex().toString()
+    }
+
+    byte[] generateSalt() {
+        byte[] buf = new byte[128]
+        new Random(System.currentTimeMillis()).nextBytes(buf)
+        return buf
     }
 }

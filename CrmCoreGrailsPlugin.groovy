@@ -14,7 +14,7 @@
 *  limitations under the License.
 *  under the License.
 */
-import grails.plugins.crm.core.DummySecurityDelegate
+import grails.plugins.crm.core.TenantUtils
 
 /**
  * Grails CRM Core Plugin.
@@ -23,11 +23,12 @@ class CrmCoreGrailsPlugin {
     // the plugin dependency group
     def groupId = "grails.crm"
     // the plugin version
-    def version = "0.1"
+    def version = "0.9.0"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
+
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
         "grails-app/views/error.gsp"
@@ -51,21 +52,18 @@ Grails CRM Core Functionality.
     // Details of company behind the plugin (if there is one)
     def organization = [ name: "Technipelago AB", url: "http://www.technipelago.se/" ]
 
-    // Any additional developers beyond the author specified above.
-//    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
-
     // Location of the plugin's issue tracker.
-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPCRMCORE" ]
+    def issueManagement = [ system: "GITHUB", url: "https://github.com/goeh/grails-crm-core/issues" ]
 
     // Online location of the plugin's browseable source code.
-//    def scm = [ url: "https://github.com/goeh/grails-crm-core" ]
+    def scm = [ url: "https://github.com/goeh/grails-crm-core" ]
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before
     }
 
     def doWithSpring = {
-        // TODO Implement runtime spring config (optional)
+        crmSecurityDelegate(grails.plugins.crm.core.DummySecurityDelegate)
     }
 
     def doWithDynamicMethods = { ctx ->
@@ -74,6 +72,13 @@ Grails CRM Core Functionality.
 
     def doWithApplicationContext = { applicationContext ->
         // TODO Implement post initialization spring config (optional)
+        if(applicationContext.containsBean("gormSelection")) {
+            applicationContext.getBean("gormSelection").fixedCriteria = {query, params->
+                eq('tenantId', TenantUtils.tenant)
+            }
+        } else {
+            log.warn("selection plugin not installed")
+        }
     }
 
     def onChange = { event ->

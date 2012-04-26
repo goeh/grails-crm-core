@@ -87,9 +87,9 @@ public class TenantASTTransformation implements ASTTransformation {
         return new MethodCallExpression(new ClassExpression(new ClassNode(TenantUtils.class)), "getTenant", ArgumentListExpression.EMPTY_ARGUMENTS);
     }
 
-    private Statement createLongConstraint(String propertyName, boolean blank) {
+    private Statement createLongConstraint(String propertyName, boolean nullable) {
         NamedArgumentListExpression nale = new NamedArgumentListExpression();
-        nale.addMapEntryExpression(new MapEntryExpression(new ConstantExpression("blank"), blank ? ConstantExpression.TRUE : ConstantExpression.FALSE));
+        nale.addMapEntryExpression(new MapEntryExpression(new ConstantExpression("nullable"), nullable ? ConstantExpression.TRUE : ConstantExpression.FALSE));
 
         MethodCallExpression mce = new MethodCallExpression(VariableExpression.THIS_EXPRESSION, propertyName, nale);
         return new ExpressionStatement(mce);

@@ -35,7 +35,7 @@ abstract class CrmLookupEntity {
         name(maxSize:80, blank:false, unique:'tenantId')
         param(maxSize:20, nullable:true)
         icon(maxSize:100, nullable:true)
-        description(maxSize:2000, nullable:true)
+        description(maxSize:2000, nullable:true, widget:'textarea')
     }
     static mapping = {
         sort 'orderIndex'
@@ -45,7 +45,7 @@ abstract class CrmLookupEntity {
     static searchable = [only : ['name','description']]
 
     def beforeValidate() {
-        if(orderIndex == null) {
+        if(orderIndex == 0) {
             def tenant = TenantUtils.getTenant()
             def mx
             withNewSession {
@@ -56,7 +56,7 @@ abstract class CrmLookupEntity {
                     eq('tenantId', tenant)
                 }
             }
-            orderIndex = mx ? mx + 1 : 1
+            orderIndex = mx ? mx + 10 : 10
         }
     }
 

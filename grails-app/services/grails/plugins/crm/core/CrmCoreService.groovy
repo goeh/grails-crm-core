@@ -17,12 +17,85 @@
 
 package grails.plugins.crm.core
 
+import grails.util.GrailsNameUtils
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.hibernate.Hibernate
+
 /**
- * Grails CRM Core Services
+ * Grails CRM Core Services.
+ *
  * @author Goran Ehrsson
  * @since 0.1
  */
 class CrmCoreService {
-    static transactional = true
+
+    static transactional = false
+
+    def grailsApplication
+    def crmFeatureService
+
+    List getInstalledFeatures() {
+        crmFeatureService ? crmFeatureService.getApplicationFeatures() : []
+    }
+
+    boolean hasFeature(String feature, String role = null, Long tenant = null) {
+        if(crmFeatureService != null) {
+            return crmFeatureService.hasFeature(feature, role, tenant)
+        }
+        return false
+    }
+
+    Map getFeature(String feature) {
+        if(crmFeatureService != null) {
+            return crmFeatureService.getFeature(feature)
+        }
+        return null
+    }
+
+    /**
+     * Check if an object is a domain instance.
+     * @param object the object to check
+     * @return true if the object is a domain instance
+     */
+    boolean isDomainClass(object) {
+        grailsApplication.domainClasses*.clazz.contains(Hibernate.getClass(object))
+    }
+
+    /**
+     * Find a domain class in application context.
+     *
+     * @param name full class name of domain or it's property name i.e. "crmContact"
+     */
+    Class getDomainClass(String name) {
+        def domain = grailsApplication.domainClasses.find {it.propertyName == name}
+        if (domain) {
+            domain = domain.clazz
+        } else {
+            domain = grailsApplication.classLoader.loadClass(name)
+        }
+        return domain
+    }
+
+    String getReferenceIdentifier(object) {
+        def ref
+        if (isDomainClass(object)) {
+            def instance = GrailsHibernateUtil.unwrapIfProxy(object)
+            ref = GrailsNameUtils.getPropertyName(instance.class) + '@' + instance.ident()
+        } else {
+            ref = object.toString()
+        }
+        return ref
+    }
+
+    def getReference(String identifier) {
+        def (name, key) = identifier.split('@').toList()
+        if (name && key) {
+            def domainClass = getDomainClass(name)
+            if (domainClass) {
+                return domainClass.get(key)
+            }
+        }
+        return identifier
+    }
 }
 
