@@ -80,7 +80,7 @@ exclude {
         return true
     }
 
-    def removeView(controller, action, location, matchParams) {
+    def removeView(controller, action, location, matchParams = null) {
         def key = controller + '.' + action + '.' + location
         def list = registrations[key]
         if(list) {
