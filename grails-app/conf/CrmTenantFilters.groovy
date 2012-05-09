@@ -29,7 +29,7 @@ class CrmTenantFilters {
     def filters = {
         tenantCheck(uri: '/**') {
             before = {
-                def tenant = params.long('tenant')
+                def tenant = params.long('tenant') ?: TenantUtils.tenant
                 if (session != null) {
                     // If tenant parameter is specified in the request then use it.
                     // Necessary permission checks are performed by application logic.
