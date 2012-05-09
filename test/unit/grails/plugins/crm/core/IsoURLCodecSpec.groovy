@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package grails.plugins.crm.core;
+package grails.plugins.crm.core
 
-import java.util.List;
+import spock.lang.Specification
 
 /**
- * Generic exception for application messages.
+ * Test the IsoURLCodec implementation.
  */
-public class CrmException extends RuntimeException {
+class IsoURLCodecSpec extends Specification {
 
-    private List args;
-
-    public CrmException(String s) {
-        super(s);
+    def "encode ISO URL"() {
+        expect:
+        IsoURLCodec.encode("Räksmörgås") == "R%E4ksm%F6rg%E5s"
     }
 
-    public CrmException(String s, List args) {
-        super(s);
-        this.args = args;
+    def "decode ISO URL"() {
+        expect:
+        IsoURLCodec.decode("R%E4ksm%F6rg%E5s") == "Räksmörgås"
     }
-
-    public CrmException(String s, List args, Throwable throwable) {
-        super(s, throwable);
-        this.args = args;
-    }
-
-    public List getArgs() {
-        return args;
-    }
-
 }

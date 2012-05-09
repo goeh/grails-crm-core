@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-package grails.plugins.crm.core;
-
-import java.util.List;
+package grails.plugins.crm.core
 
 /**
- * Generic exception for application messages.
+ * Convert URL using ISO-8859-1 encoding.
+ *
+ * It encodes characters like ÅÄÖ into their hex representations (%C5%C4%D6).
+ *
+ * Credits to Vivek Krishna for the blog post:
+ *   http://www.intelligrape.com/blog/2011/04/11/iso-8859-based-url-encoding-in-grails/
  */
-public class CrmException extends RuntimeException {
-
-    private List args;
-
-    public CrmException(String s) {
-        super(s);
+class IsoURLCodec {
+    static encode = { obj ->
+        URLEncoder.encode(obj.toString(), "ISO-8859-1")
     }
-
-    public CrmException(String s, List args) {
-        super(s);
-        this.args = args;
+    static decode = { obj ->
+        URLDecoder.decode(obj.toString(), "ISO-8859-1")
     }
-
-    public CrmException(String s, List args, Throwable throwable) {
-        super(s, throwable);
-        this.args = args;
-    }
-
-    public List getArgs() {
-        return args;
-    }
-
 }
