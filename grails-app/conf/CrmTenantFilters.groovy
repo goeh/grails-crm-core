@@ -29,18 +29,19 @@ class CrmTenantFilters {
     def filters = {
         tenantCheck(uri: '/**') {
             before = {
-                def tenant = params.long('tenant') ?: TenantUtils.tenant
-                if (session != null) {
-                    // If tenant parameter is specified in the request then use it.
-                    // Necessary permission checks are performed by application logic.
-                    if (tenant != null) {
-                        session.tenant = tenant
-                    } else {
-                        tenant = session.tenant
+                // If tenant parameter is specified in the request then use it.
+                // Necessary permission checks are performed by application logic.
+                def tenant = params.long('tenant')
+                if (!tenant) {
+                    tenant = TenantUtils.tenant
+                    if (!tenant) {
+                        if(session != null) {
+                            tenant = session.tenant
+                        }
+                        if (tenant == null) {
+                            tenant = 0L
+                        }
                     }
-                }
-                if (tenant == null) {
-                    tenant = 0L
                 }
                 TenantUtils.setTenant(tenant)
             }
