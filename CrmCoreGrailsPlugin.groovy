@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import grails.plugins.crm.core.TenantUtils
+import grails.plugins.crm.core.ApplicationContextHolder
 
 /**
  * Grails CRM Core Plugin.
@@ -22,7 +23,7 @@ class CrmCoreGrailsPlugin {
     // the plugin dependency group
     def groupId = "grails.crm"
     // the plugin version
-    def version = "0.9.5"
+    def version = "0.9.6"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0 > *"
     // the other plugins this plugin depends on
@@ -52,7 +53,7 @@ Grails CRM Core Functionality.
     def organization = [ name: "Technipelago AB", url: "http://www.technipelago.se/" ]
 
     // Location of the plugin's issue tracker.
-    def issueManagement = [ system: "GITHUB", url: "https://github.com/goeh/grails-crm-core/issues" ]
+    def issueManagement = [ system: "github", url: "https://github.com/goeh/grails-crm-core/issues" ]
 
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/goeh/grails-crm-core" ]
@@ -63,6 +64,9 @@ Grails CRM Core Functionality.
 
     def doWithSpring = {
         crmSecurityDelegate(grails.plugins.crm.core.DummySecurityDelegate)
+        applicationContextHolder(ApplicationContextHolder) { bean ->
+            bean.factoryMethod = 'getInstance'
+        }
     }
 
     def doWithDynamicMethods = { ctx ->

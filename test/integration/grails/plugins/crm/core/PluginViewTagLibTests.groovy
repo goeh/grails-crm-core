@@ -27,8 +27,9 @@ class PluginViewTagLibTests extends GroovyPagesTestCase {
     def crmPluginService
 
     void testPluginViews() {
+        def enabled
         crmPluginService.registerView('crmContact', 'show', 'tabs',
-                [id: "friends", label: "Friends", template: '/crmContact/friends', model: {
+                [id: "friends", label: "Friends", template: '/crmContact/friends', visible:{enabled}, model: {
                     [result: [[name: "Joe Adams"], [name: "Liza Brown"], [name: "Alex Sherman"]], totalCount: 3]
                 }]
         )
@@ -37,6 +38,10 @@ class PluginViewTagLibTests extends GroovyPagesTestCase {
         def params = RCH.currentRequestAttributes()
 		params.controllerName = 'crmContact'
 		params.actionName = 'show'
+        enabled = false
+        assert applyTemplate(template, [crmContact:[name:"Grails"]]) == ""
+
+        enabled = true
         assert applyTemplate(template, [crmContact:[name:"Grails"]]) == "Joe Adams Liza Brown Alex Sherman are friends of Grails"
     }
 }

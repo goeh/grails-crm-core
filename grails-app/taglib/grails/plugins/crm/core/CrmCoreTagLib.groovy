@@ -82,23 +82,58 @@ class CrmCoreTagLib {
     }
 
     def pluginViews = {attrs, body ->
+
         def location = attrs.location
         if (!location) {
             out << "Tag [pluginViews] missing required attribute [location]"
             return
         }
+
         def views = crmPluginService.getViews(controllerName, actionName, location).sort {it.index ?: (it.id ?: 99999)}
+
         for (view in views) {
             def params = [:]
             params.putAll(view)
-            def model = params.model
-            if (model instanceof Closure) {
-                def cl = model.clone()
-                cl.delegate = new ClosureDelegate(delegate, grailsApplication, pageScope.getVariables(), [:])
-                cl.resolveStrategy = Closure.DELEGATE_FIRST
-                params.model = cl()
+
+            // isVisible is closure or null/false
+            def isVisible = view['visible']
+            def closureDelegate
+            if (isVisible instanceof Closure) {
+                isVisible = isVisible.clone()
+                if (closureDelegate == null) {
+                    closureDelegate = new ClosureDelegate(delegate, grailsApplication, pageScope.getVariables(), [
+                            session: session,
+                            request: request,
+                            controllerName: controllerName,
+                            actionName: actionName,
+                            flash: flash,
+                            params: params
+                    ])
+                }
+                isVisible.delegate = closureDelegate
+                isVisible.resolveStrategy = Closure.DELEGATE_FIRST
             }
-            out << body([(attrs.var ?: 'it'):params])
+
+            if ((isVisible == null) || (isVisible == true) || isVisible.call()) {
+                def model = params.model
+                if (model instanceof Closure) {
+                    def cl = model.clone()
+                    if (closureDelegate == null) {
+                        closureDelegate = new ClosureDelegate(delegate, grailsApplication, pageScope.getVariables(), [
+                                session: session,
+                                request: request,
+                                controllerName: controllerName,
+                                actionName: actionName,
+                                flash: flash,
+                                params: params
+                        ])
+                    }
+                    cl.delegate = closureDelegate
+                    cl.resolveStrategy = Closure.DELEGATE_FIRST
+                    params.model = cl()
+                }
+                out << body([(attrs.var ?: 'it'): params])
+            }
         }
     }
 
