@@ -38,6 +38,13 @@ class CrmCoreTagLib {
         }
     }
 
+    def noTenant = {attrs, body ->
+        def tenant = crmSecurityService.currentTenant
+        if (!tenant) {
+            out << body()
+        }
+    }
+
     def tenant = {attrs, body ->
         def tenant = crmSecurityService.currentTenant
         if (tenant) {

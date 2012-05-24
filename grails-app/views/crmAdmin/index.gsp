@@ -1,3 +1,4 @@
+<%@ page import="grails.plugins.crm.core.TenantUtils" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,7 +8,9 @@
 
 <body>
 
-<crm:header title="crmAdmin.index.title" subtitle="crmAdmin.index.subtitle"/>
+<header class="page-header">
+    <h1><g:message code="crmAdmin.index.title"/> <small><g:message code="crmAdmin.index.subtitle"/></small></h1>
+</header>
 
 <div class="row-fluid">
 
@@ -30,6 +33,7 @@
             <tr><td>Services</td><td>${grailsApplication.serviceClasses.size()}</td></tr>
             <tr><td>Tag Libraries</td><td>${grailsApplication.tagLibClasses.size()}</td></tr>
             -->
+            <tr><td>Tenant</td><td>${TenantUtils.tenant}</td></tr>
             </tbody>
         </table>
 

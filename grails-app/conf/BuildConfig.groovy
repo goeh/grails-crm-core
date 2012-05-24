@@ -32,7 +32,7 @@ grails.project.dependency.resolution = {
 
     plugins {
         build(":tomcat:$grailsVersion",
-              ":release:2.0.0") {
+              ":release:2.0.2") {
             export = false
         }
         test ':spock:latest.integration'

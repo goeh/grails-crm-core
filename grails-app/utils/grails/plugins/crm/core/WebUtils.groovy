@@ -18,6 +18,7 @@ package grails.plugins.crm.core
 import javax.servlet.http.HttpServletResponse
 import java.text.SimpleDateFormat
 import org.apache.commons.lang.StringUtils
+import javax.servlet.http.HttpServletRequest
 
 /**
  * Utility methods for the web layer.
@@ -30,18 +31,19 @@ class WebUtils {
     static void noCache(HttpServletResponse response) {
         def fmt = new SimpleDateFormat("EEE, d MMM yyyy '12:00:00 GMT'", Locale.US)
         response.setHeader("Cache-Control", "max-age=0,no-cache,no-store,post-check=0,pre-check=0")
-        response.setHeader("Expires", fmt.format(new Date()-1)) // Expired yesterday
+        response.setHeader("Expires", fmt.format(new Date() - 1)) // Expired yesterday
     }
 
     /* By default, Tomcat will set headers on any SSL content to deny
      * caching. This will cause downloads to Internet Explorer to fail. So
      * we override Tomcat's default behavior here.
      */
+
     static void shortCache(HttpServletResponse response) {
         response.setHeader("Pragma", "")
         response.setHeader("Cache-Control", "private,no-store,max-age=60")
         Calendar cal = Calendar.getInstance()
-        cal.add(Calendar.MINUTE,2)
+        cal.add(Calendar.MINUTE, 2)
         response.setDateHeader("Expires", cal.getTimeInMillis())
     }
 
@@ -60,16 +62,16 @@ class WebUtils {
     }
 
     static String bytesFormatted(b) {
-        if(b < 1024) {
+        if (b < 1024) {
             return b.toString()
-        } else if(b > (1024 * 10000)) {
+        } else if (b > (1024 * 10000)) {
             return "${(b / 1024000 + 0.512).intValue()} MB"
         }
         return "${(b / 1024 + 0.512).intValue()} kB"
     }
 
     static void withResponseWriter(response, encoding, closure = null) {
-        if(closure == null && encoding instanceof Closure) {
+        if (closure == null && encoding instanceof Closure) {
             closure = encoding
             encoding = 'UTF-8'
         }
@@ -83,7 +85,7 @@ class WebUtils {
             outs = null
             response.setContentLength(tempFile.length().intValue())
             response.setCharacterEncoding(encoding)
-            tempFile.withInputStream{is->
+            tempFile.withInputStream {is ->
                 def out = response.outputStream
                 out << is
                 out.flush()
@@ -95,17 +97,28 @@ class WebUtils {
     }
 
     static String decorateText(String text, int maxLen = 0) {
-        if(text == null) {
+        if (text == null) {
             return ''
         }
-        if(maxLen > 0 && text.length() > maxLen) {
+        if (maxLen > 0 && text.length() > maxLen) {
             text = StringUtils.abbreviate(text, maxLen)
         }
         def decorators = [] // TODO How to add decorators?
-        for(d in decorators) {
+        for (d in decorators) {
             text = d.decorateText(text)
         }
         return text.replace('\n', '<br/>\n')
+    }
+
+    static boolean deleteCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
+        def cookie = request.cookies.find {it.name == cookieName}
+        if (cookie) {
+            cookie.maxAge = 0
+            cookie.value = ''
+            response.addCookie(cookie)
+            return true
+        }
+        return false
     }
 }
 

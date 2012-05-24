@@ -1,4 +1,4 @@
-<%@ page import="java.lang.management.ManagementFactory" %>
+<%@ page import="grails.plugins.crm.core.TenantUtils; java.lang.management.ManagementFactory" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
@@ -16,6 +16,7 @@
     <b>Grails version:</b> <g:meta name="app.grails.version"></g:meta><br/>
     <b>Groovy version:</b> ${org.codehaus.groovy.runtime.InvokerHelper.getVersion()}<br/>
     <b>JVM version:</b> ${System.getProperty('java.version')}<br/>
+    <b>Tenant:</b> ${TenantUtils.tenant}<br/>
 </fieldset>
 <fieldset>
     <legend>Memory MXBean</legend>
