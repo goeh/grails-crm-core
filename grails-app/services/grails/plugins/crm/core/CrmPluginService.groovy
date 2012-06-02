@@ -21,18 +21,21 @@ package grails.plugins.crm.core
  * @since 0.1
  */
 class CrmPluginService {
+
     static transactional = false
 
     private final Map registrations = [:]
 
+    def pluginManager
+
 /* TODO DSL!
 views {
   crmProject.show.content {
-		template '/relationsGrid'
-		plugin 'crm-relation'
-		model {
-			[bean: crmProject]
-		}
+        template '/relationsGrid'
+        plugin 'crm-relation'
+        model {
+            [bean: crmProject]
+        }
   }
 }
 
@@ -42,10 +45,11 @@ exclude {
   }
 }
 */
+
     def registerView(controller, action, location, params) {
         def key = controller + '.' + action + '.' + location
         def list = registrations[key]
-        if(list == null) {
+        if (list == null) {
             list = registrations[key] = []
         }
         log.info "registered view: $key"
@@ -56,20 +60,20 @@ exclude {
     def hasView(controller, action, location, matchParams = null) {
         def key = controller + '.' + action + '.' + location
         def list = registrations[key]
-        if(!list) {
+        if (!list) {
             return false
         }
-        if(matchParams) {
+        if (matchParams) {
             def itor = list.iterator()
-            while(itor.hasNext()) {
+            while (itor.hasNext()) {
                 def map = itor.next()
                 def rval = true
-                matchParams.each{k, v->
-                    if(map[k] != v) {
+                matchParams.each {k, v ->
+                    if (map[k] != v) {
                         rval = false
                     }
                 }
-                if(rval) {
+                if (rval) {
                     return true
                 }
             }
@@ -81,23 +85,23 @@ exclude {
     def removeView(controller, action, location, matchParams = null) {
         def key = controller + '.' + action + '.' + location
         def list = registrations[key]
-        if(list) {
+        if (list) {
             def itor = list.iterator()
-            while(itor.hasNext()) {
+            while (itor.hasNext()) {
                 def map = itor.next()
                 def rval = true
-                if(matchParams) {
-                    matchParams.each{k, v->
-                        if(map[k] != v) {
+                if (matchParams) {
+                    matchParams.each {k, v ->
+                        if (map[k] != v) {
                             rval = false
                         }
                     }
                 }
-                if(rval) {
+                if (rval) {
                     itor.remove()
                 }
             }
-            if(list.isEmpty()) {
+            if (list.isEmpty()) {
                 registrations.remove(key)
             }
         }
@@ -105,13 +109,13 @@ exclude {
 
     List getViews(controller, action, location) {
         def list = getRegistrations(controller + '.' + action + '.' + location)
-        if(action != '*') {
+        if (action != '*') {
             list.addAll(getRegistrations(controller + '.*.' + location))
         }
-        if(controller != '*') {
+        if (controller != '*') {
             list.addAll(getRegistrations('*.' + action + '.' + location))
         }
-        if(controller != '*' && action != '*') {
+        if (controller != '*' && action != '*') {
             list.addAll(getRegistrations('*.*.' + location))
         }
         return list
@@ -119,7 +123,7 @@ exclude {
 
     private List getRegistrations(String key) {
         def list = registrations[key]
-        if(list == null) {
+        if (list == null) {
             list = []
         } else {
             def copy = []
@@ -129,5 +133,27 @@ exclude {
         return list
     }
 
+    /**
+     * Send an event synchronously to all installed plugins that declares an event handle for the event.
+     *
+     * @param eventName name of event (i.e. "onLogin", "onDelete")
+     * @param event event object, can be anything but receiver must know what it is
+     * @return false if an event handler returned false, true if any handler received the event, null if no handlers were found
+     */
+    def synchronousEvent(String eventName, Object event) {
+        def allPlugins = pluginManager.allPlugins
+        def rval
+        for (plugin in allPlugins) {
+            if (plugin.instance.hasProperty(eventName)) {
+                def eventHandler = plugin.instance."$eventName"
+                eventHandler.delegate = plugin
+                if(eventHandler.call(event) == false) {
+                    return false // Event handles can return false to stop further event processing.
+                }
+                rval = true
+            }
+        }
+        return rval
+    }
 }
 

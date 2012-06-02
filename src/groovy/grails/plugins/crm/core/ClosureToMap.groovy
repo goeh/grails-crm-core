@@ -20,16 +20,24 @@ package grails.plugins.crm.core
  * Utility class to convert Groovy closures to Map.
  */
 class ClosureToMap {
-    Map props = [:]
-    String subKey
+    Map props
 
-    ClosureToMap(Closure c) {
-        iterate(c)
+    static Map convert(Closure c) {
+        def map = [:]
+        new ClosureToMap(map, c)
+        return map
     }
 
-    def iterate(Closure c) {
+    ClosureToMap(Map map, Closure c) {
+        iterate(map, c)
+    }
+
+    def iterate(Map map, Closure c) {
+        def prev = props
+        props = map
         c.delegate = this
         c.each {"$it"()}
+        props = prev
     }
 
     def methodMissing(String name, args) {
@@ -37,18 +45,10 @@ class ClosureToMap {
 
         // nested closure, recurse
         if (args[0] in Closure) {
-            subKey = name
-            iterate(args[0])
-            subKey = null
-        }
-        else {
-            // add nested closure to properties map
-            if (subKey) {
-                Map map = props[subKey]
-                def val = [(name): (args.size() > 1 ? args.toList() : args[0])]
-                props[subKey] = map ? map + val : val
-            }
-            else props[name] = (args.size() > 1 ? args.toList() : args[0])
+            def map = props[name] = [:]
+            iterate(map, args[0])
+        } else {
+            props[name] = (args.size() > 1 ? args.toList() : args[0])
         }
     }
 
