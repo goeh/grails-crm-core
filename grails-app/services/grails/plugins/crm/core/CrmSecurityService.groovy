@@ -33,7 +33,7 @@ class CrmSecurityService {
     }
 
     /**
-     * Checks is the current user has permission to perform an operation.
+     * Checks if the current user has permission to perform an operation.
      * @param permission
      * @return
      */
@@ -51,20 +51,39 @@ class CrmSecurityService {
         crmSecurityDelegate.runAs(username, closure)
     }
 
+    Map createUser(properties) {
+        crmSecurityDelegate.createUser(properties)
+    }
+
     /**
      * Get the current user information.
      * @return a Map with user properties (username, name, email, ...)
      */
-    def getCurrentUser() {
+    Map getCurrentUser() {
         crmSecurityDelegate.getCurrentUser()
+    }
+
+    Map getUserInfo(String username) {
+        crmSecurityDelegate.getUserInfo(username)
+    }
+
+    Map createTenant(String tenantName, String tenantType, Long parent = null, String owner = null) {
+        if(! owner) {
+            owner = crmSecurityDelegate.currentUser?.username
+        }
+        crmSecurityDelegate.createTenant(tenantName, tenantType, parent, owner)
     }
 
     /**
      * Get the current executing tenant.
      * @return a Map with tenant properties (id, name, type, ...)
      */
-    def getCurrentTenant() {
+    Map getCurrentTenant() {
         crmSecurityDelegate.getCurrentTenant()
+    }
+
+    Map getTenantInfo(Long id) {
+        crmSecurityDelegate.getTenantInfo(id)
     }
 
     /**
@@ -72,7 +91,8 @@ class CrmSecurityService {
      * @return list of tenants (DAO)
      */
     List getTenants() {
-        crmSecurityDelegate.getTenants()
+        def username = crmSecurityDelegate.currentUser?.username
+        username ? crmSecurityDelegate.getTenants(username) : []
     }
 
     /**
@@ -81,7 +101,8 @@ class CrmSecurityService {
      * @return true if user has access to the tenant (by it's roles, permissions or ownership)
      */
     boolean isValidTenant(Long tenantId) {
-        crmSecurityDelegate.isValidTenant(tenantId)
+        def username = crmSecurityDelegate.currentUser?.username
+        username ? crmSecurityDelegate.isValidTenant(username, tenantId) : false
     }
 
     /**

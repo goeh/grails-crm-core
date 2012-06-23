@@ -19,53 +19,68 @@ import java.security.MessageDigest
 
 /**
  * Dummy delegate for CrmSecurityService that can be used for testing.
+ *
  * @author Goran Ehrsson
  * @since 0.1
  */
-class DummySecurityDelegate {
+class DummySecurityDelegate implements SecurityServiceDelegate {
 
-    String username = "nobody"
-    String name = "Nobody"
-    String email = "nobody@unknown.net"
-    String address1
-    String address2
-    String postalCode
-    String city
-    String countryCode
-    String telephone
-    boolean enabled = true
-
-    Long tenant = 0L
+    def tenants = [[id: 1L, name: "Default Tenant", owner: "nobody"]]
+    def user = [guid: "576793b8-106d-4d60-bb26-e953c874d501", username: "nobody", name: "Nobody", email: "nobody@unknown.net",
+            enabled: true, timezone: TimeZone.getDefault(), roles: [], permissions: []]
 
     boolean isAuthenticated() {
-        enabled
+        true
     }
 
-    boolean isPermitted(permission) {
-        enabled
+    boolean isPermitted(Object permission) {
+        true
     }
 
     def runAs(String username, Closure closure) {
-        closure.call()
-    }
-
-    def getCurrentUser() {
-        ['username', 'name', 'email', 'address1', 'address2', 'postalCode', 'city', 'countryCode', 'telephone', 'enabled'].inject([:]) {map, p ->
-            map[p] = this."$p"
-            return map
+        def restore = user.username
+        try {
+            user.username = username
+            closure.call()
+        } finally {
+            user.username = restore
         }
     }
 
-    def getCurrentTenant() {
-        [id: tenant, name: "Default Tenant", owner: username]
+    Map<String, Object> createUser(Map<String, Object> properties) {
+        // Ignore request.
+        getCurrentUser()
     }
 
-    List getTenants() {
-        [getCurrentTenant()]
+    Map getCurrentUser() {
+        user
     }
 
-    boolean isValidTenant(Long tenantId) {
-        true
+    Map getUserInfo(String username) {
+        return getCurrentUser()
+    }
+
+    Map<String, Object> createTenant(String tenantName, String tenantType, Long parent, String owner) {
+        def n = tenants.size() + 1
+        def t = [id: n, name: "Tenant #$n", owner: "user$n"]
+        tenants << t
+        return t
+    }
+
+    Map<String, Object> getCurrentTenant() {
+        tenants[-1]
+    }
+
+    Map<String, Object> getTenantInfo(Long id) {
+        tenants.find{it.id == id}
+    }
+
+    List<Map<String, Object>> getTenants(String username) {
+        tenants
+    }
+
+    boolean isValidTenant(String username, Long tenantId) {
+        tenants.find {it.id == tenantId} != null
     }
 
     private static final int hashIterations = 1000

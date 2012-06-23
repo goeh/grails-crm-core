@@ -24,7 +24,7 @@ class CrmAdminController {
 
     static navigation = [
             [group: 'admin',
-                    order: 900,
+                    order: 990,
                     title: 'crmAdmin.label',
                     action: 'index'
             ],
@@ -43,12 +43,7 @@ class CrmAdminController {
     def crmCoreService
 
     def index() {
-        def features = [:]
-        for(f in crmCoreService.installedFeatures) {
-            features[f] = crmCoreService.getFeature(f)
-        }
-
-        [features: features]
+        [features: crmCoreService.installedFeatures]
     }
 
     def jvm() {

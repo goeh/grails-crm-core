@@ -25,22 +25,43 @@ class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
         crmSecurityService.currentUser?.username == 'nobody'
     }
 
-    void "user is authenticated by default"() {
+    def "user is authenticated by default"() {
         expect:
         crmSecurityService.authenticated
     }
 
-    void "tenant is zero by default"() {
+    def "user is allowed everything by default"() {
+        expect:
+        crmSecurityService.isPermitted("test:index")
+    }
+
+    def "run as admin"() {
+        given:
+        def u = null
+        when:
+        crmSecurityService.runAs("admin") {
+            u = crmSecurityService.currentUser?.username
+        }
+        then:
+        u == "admin"
+    }
+
+    def "tenant is one by default"() {
         when:
         def tenant = crmSecurityService.currentTenant
         then:
-        tenant.id == 0
+        tenant.id == 1
         tenant.name == 'Default Tenant'
         tenant.type == null
         tenant.owner == 'nobody'
     }
 
-    void "getTenants"() {
+    def "check if tenant is valid"() {
+        expect:
+        crmSecurityService.isValidTenant(1)
+    }
+
+    def "getTenants"() {
         when:
         def list = crmSecurityService.tenants
         then:
@@ -51,5 +72,16 @@ class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
         then:
         tenant != null
         tenant.name == 'Default Tenant'
+    }
+
+    def "test with another tenant"() {
+        given:
+        def t = null
+        when:
+        crmSecurityService.withTenant(1) {
+            t = crmSecurityService.currentTenant?.id
+        }
+        then:
+        t == 1
     }
 }

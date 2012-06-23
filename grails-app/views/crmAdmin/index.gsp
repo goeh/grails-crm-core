@@ -49,7 +49,7 @@
             </g:if>
             <tbody>
             <g:each var="f" in="${features}">
-                <tr><td>${f.key}</td><td><crm:featureLink feature="${f.key}" enabled="true"/></td></tr>
+                <tr><td>${f.name}</td><td><crm:featureLink feature="${f.name}" enabled="true"/></td></tr>
             </g:each>
             <g:unless test="${features}">
                 <tr><td>No features installed</td></tr>
