@@ -52,6 +52,17 @@ class CrmCoreTagLib {
         }
     }
 
+    def eachTenant = {attrs, body ->
+        def list = crmSecurityService.getTenants()
+        list.eachWithIndex {s, i ->
+            def map = [(attrs.var ?: 'it'): s]
+            if (attrs.status) {
+                map[attrs.status] = i
+            }
+            out << body(map)
+        }
+    }
+
     def hasPermission = {attrs, body ->
         def perm = attrs.permission
         if (!perm) {
