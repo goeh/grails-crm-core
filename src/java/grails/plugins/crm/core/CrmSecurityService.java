@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * This interface must be implemented by security service delegates.
  */
-public interface SecurityServiceDelegate {
+public interface CrmSecurityService {
 
     /**
      * Checks if the current user is authenticated in this session.
@@ -72,14 +72,14 @@ public interface SecurityServiceDelegate {
      *
      * @return a Map with user properties (username, name, email, ...)
      */
-    Map getCurrentUser();
+    Map<String, Object> getCurrentUser();
 
     /**
      * Get user information for a user.
      *
      * @return a Map with user properties (username, name, email, ...)
      */
-    Map getUserInfo(String username);
+    Map<String, Object> getUserInfo(String username);
 
     /**
      * Delete a user.
@@ -99,6 +99,15 @@ public interface SecurityServiceDelegate {
      * @return info about newly created tenant (DAO)
      */
     Map<String, Object> createTenant(String tenantName, String tenantType, Long parent, String owner);
+
+    /**
+     * Update tenant properties.
+     *
+     * @param tenantId id of tenant to update
+     * @param properties key/value pairs to update
+     * @return tenant information after update
+     */
+    Map<String, Object> updateTenant(Long tenantId, Map<String, Object> properties);
 
     /**
      * Get the current executing tenant.

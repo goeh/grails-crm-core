@@ -23,7 +23,7 @@ import java.security.MessageDigest
  * @author Goran Ehrsson
  * @since 1.0
  */
-class TestSecurityService implements SecurityServiceDelegate {
+class TestSecurityService implements CrmSecurityService {
 
     def tenants = [[id: 1L, name: "Default Tenant", type: "dummy", user: [username: "nobody", email: "nobody@unknown.net"],
             options: [], dateCreated: new Date(), expires: (new Date() + 10)]]
@@ -94,7 +94,7 @@ class TestSecurityService implements SecurityServiceDelegate {
      * Return information about the current executing user.
      * @return
      */
-    Map getCurrentUser() {
+    Map<String, Object> getCurrentUser() {
         user
     }
 
@@ -103,7 +103,7 @@ class TestSecurityService implements SecurityServiceDelegate {
      * @param username
      * @return
      */
-    Map getUserInfo(String username) {
+    Map<String, Object> getUserInfo(String username) {
         return getCurrentUser()
     }
 
@@ -128,6 +128,21 @@ class TestSecurityService implements SecurityServiceDelegate {
         tenants << t
         publishEvent(new TenantCreatedEvent(t))
         return t
+    }
+
+    /**
+     * Update tenant properties.
+     *
+     * @param tenantId id of tenant to update
+     * @param properties key/value pairs to update
+     * @return tenant information after update
+     */
+    Map<String, Object> updateTenant(Long tenantId, Map<String, Object> properties) {
+        def tenant = getTenantInfo(tenantId)
+        if(tenant) {
+            tenant.putAll(properties)
+        }
+        return tenant
     }
 
     /**
