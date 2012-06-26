@@ -35,6 +35,17 @@ class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
         crmSecurityService.isPermitted("test:index")
     }
 
+    def "update user"() {
+        expect:
+        crmSecurityService.currentUser.name == 'Nobody'
+
+        when:
+        crmSecurityService.updateUser("nobody", [name:"Someone"])
+
+        then:
+        crmSecurityService.currentUser.name == 'Someone'
+    }
+
     def "run as admin"() {
         given:
         def u = null
@@ -52,13 +63,14 @@ class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
         then:
         tenant.id == 1
         tenant.name == 'Default Tenant'
-        tenant.type == null
-        tenant.owner == 'nobody'
+        tenant.type == 'dummy'
+        tenant.user.username == 'nobody'
     }
 
     def "check if tenant is valid"() {
         expect:
         crmSecurityService.isValidTenant(1)
+        !crmSecurityService.isValidTenant(42)
     }
 
     def "getTenants"() {

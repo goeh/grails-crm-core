@@ -22,11 +22,12 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "0.9.8.4"
+    def version = "0.9.9"
     def grailsVersion = "2.0 > *"
     def dependsOn = [:]
     def pluginExcludes = [
-            "grails-app/views/error.gsp"
+            "grails-app/views/error.gsp",
+            "grails-app/services/grails/plugins/crm/core/TestSecurityService.groovy"
     ]
     def title = "Grails Crm Core Plugin" // Headline display name of the plugin
     def author = "Goran Ehrsson"
@@ -41,7 +42,6 @@ Grails CRM Core Functionality.
     def scm = [url: "https://github.com/goeh/grails-crm-core"]
 
     def doWithSpring = {
-        crmSecurityDelegate(grails.plugins.crm.core.DummySecurityDelegate)
         applicationContextHolder(ApplicationContextHolder) { bean ->
             bean.factoryMethod = 'getInstance'
         }

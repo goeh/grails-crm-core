@@ -35,6 +35,7 @@ grails.project.dependency.resolution = {
               ":release:2.0.3") {
             export = false
         }
+        compile ":spring-events:1.2.1"
         test ':spock:latest.integration'
         test ':codenarc:latest.integration'
         runtime ":hibernate:$grailsVersion"

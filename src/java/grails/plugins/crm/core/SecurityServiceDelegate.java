@@ -59,6 +59,15 @@ public interface SecurityServiceDelegate {
     Map<String, Object> createUser(Map<String, Object> properties);
 
     /**
+     * Update an existing user.
+     *
+     * @param username username
+     * @param properties key/value pairs to update
+     * @return user information after update
+     */
+    Map<String, Object> updateUser(String username, Map<String, Object> properties);
+
+    /**
      * Get the current user information.
      *
      * @return a Map with user properties (username, name, email, ...)
@@ -71,6 +80,14 @@ public interface SecurityServiceDelegate {
      * @return a Map with user properties (username, name, email, ...)
      */
     Map getUserInfo(String username);
+
+    /**
+     * Delete a user.
+     *
+     * @param username username
+     * @return true if the user was deleted
+     */
+    boolean deleteUser(String username);
 
     /**
      * Create new tenant.
@@ -108,11 +125,19 @@ public interface SecurityServiceDelegate {
     /**
      * Check if current user can access the specified tenant.
      *
-     * @param username username
      * @param tenantId the tenant ID to check
+     * @param username username or null for current user
      * @return true if user has access to the tenant (by it's roles, permissions or ownership)
      */
-    boolean isValidTenant(String username, Long tenantId);
+    boolean isValidTenant(Long tenantId, String username);
+
+    /**
+     * Delete a tenant and all information associated with the tenant.
+     *
+     * @param id tenant id
+     * @return true if the tenant was deleted
+     */
+    boolean deleteTenant(Long id);
 
     Object hashPassword(String password, byte[] salt);
 
