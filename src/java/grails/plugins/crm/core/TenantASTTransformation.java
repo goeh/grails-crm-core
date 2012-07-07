@@ -52,7 +52,7 @@ public class TenantASTTransformation implements ASTTransformation {
                     System.out.println("Adding tenantId field to class " + theClass.getName());
                     theClass.addProperty("tenantId", Modifier.PUBLIC, ClassHelper.Long_TYPE, createTenantMethodCall(), null, null);
 
-                    Statement tenantConstraintExpression = createLongConstraint("tenantId", false);
+                    Statement tenantConstraintExpression = createTenantConstraint("tenantId", false);
 
                     PropertyNode constraints = theClass.getProperty("constraints");
                     if (constraints != null) {
@@ -61,7 +61,7 @@ public class TenantASTTransformation implements ASTTransformation {
                             ClosureExpression ce = (ClosureExpression) constraints.getInitialExpression();
                             ((BlockStatement) ce.getCode()).addStatement(tenantConstraintExpression);
                         } else {
-                            System.out.println("Do not know how to add constraints expression to non ClosureExpression " + constraints.getInitialExpression());
+                            System.err.println("Do not know how to add constraints expression to non ClosureExpression " + constraints.getInitialExpression());
                         }
                     } else {
                         System.out.println("Adding tenantId and constraints closure for class " + theClass.getName());
@@ -86,7 +86,7 @@ public class TenantASTTransformation implements ASTTransformation {
         return new MethodCallExpression(new ClassExpression(new ClassNode(TenantUtils.class)), "getTenant", ArgumentListExpression.EMPTY_ARGUMENTS);
     }
 
-    private Statement createLongConstraint(String propertyName, boolean nullable) {
+    private Statement createTenantConstraint(String propertyName, boolean nullable) {
         NamedArgumentListExpression nale = new NamedArgumentListExpression();
         nale.addMapEntryExpression(new MapEntryExpression(new ConstantExpression("nullable"), nullable ? ConstantExpression.TRUE : ConstantExpression.FALSE));
 

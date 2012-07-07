@@ -22,14 +22,14 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "0.9.9.1"
+    def version = "0.9.9.5"
     def grailsVersion = "2.0 > *"
     def dependsOn = [:]
     def pluginExcludes = [
             "grails-app/views/error.gsp",
             "grails-app/services/grails/plugins/crm/core/TestSecurityService.groovy"
     ]
-    def title = "Grails Crm Core Plugin" // Headline display name of the plugin
+    def title = "Grails CRM Core Plugin"
     def author = "Goran Ehrsson"
     def authorEmail = "goran@technipelago.se"
     def description = '''\
@@ -45,6 +45,7 @@ Grails CRM Core Functionality.
         applicationContextHolder(ApplicationContextHolder) { bean ->
             bean.factoryMethod = 'getInstance'
         }
+        currentTenant(grails.plugins.crm.core.CurrentTenantThreadLocal)
     }
 
     def doWithApplicationContext = { applicationContext ->
