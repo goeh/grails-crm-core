@@ -103,7 +103,7 @@ class WebUtils {
         if (maxLen > 0 && text.length() > maxLen) {
             text = StringUtils.abbreviate(text, maxLen)
         }
-        def decorators = [] // TODO How to add decorators?
+        def decorators = [] // TODO How to add decorators? Grails artifacts!?
         for (d in decorators) {
             text = d.decorateText(text)
         }

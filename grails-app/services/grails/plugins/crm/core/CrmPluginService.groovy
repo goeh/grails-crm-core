@@ -133,27 +133,5 @@ exclude {
         return list
     }
 
-    /**
-     * Send an event synchronously to all installed plugins that declares an event handle for the event.
-     *
-     * @param eventName name of event (i.e. "onLogin", "onDelete")
-     * @param event event object, can be anything but receiver must know what it is
-     * @return false if an event handler returned false, true if any handler received the event, null if no handlers were found
-     */
-    def synchronousEvent(String eventName, Object event) {
-        def allPlugins = pluginManager.allPlugins
-        def rval
-        for (plugin in allPlugins) {
-            if (plugin.instance.hasProperty(eventName)) {
-                def eventHandler = plugin.instance."$eventName"
-                eventHandler.delegate = plugin
-                if(eventHandler.call(event) == false) {
-                    return false // Event handles can return false to stop further event processing.
-                }
-                rval = true
-            }
-        }
-        return rval
-    }
 }
 

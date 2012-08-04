@@ -96,7 +96,13 @@ class CrmCoreTagLib {
     }
 
     def decorate = {attrs, body ->
-        out << WebUtils.decorateText(body().toString(), attrs.max ? Integer.valueOf(attrs.max) : 0)
+        def result = WebUtils.decorateText(body().toString().trim(), attrs.max ? Integer.valueOf(attrs.max) : 0)
+        if(attrs.encode) {
+            result = result."encodeAs${attrs.encode}"()
+        } else {
+            result = result.encodeAsHTML()
+        }
+        out << result
     }
 
     def pluginViews = {attrs, body ->

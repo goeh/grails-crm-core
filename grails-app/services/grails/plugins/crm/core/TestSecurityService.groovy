@@ -71,7 +71,7 @@ class TestSecurityService implements CrmSecurityService {
      */
     Map<String, Object> createUser(Map<String, Object> properties) {
         def user = getCurrentUser()
-        publishEvent(new UserCreatedEvent(user))
+        event(for: "crm", topic: "userCreated", data:user)
         return user
     }
 
@@ -85,7 +85,7 @@ class TestSecurityService implements CrmSecurityService {
     Map<String, Object> updateUser(String username, Map<String, Object> properties) {
         if(username == user.username) {
             user.putAll(properties)
-            publishEvent(new UserUpdatedEvent(user))
+            event(for: "crm", topic: "userUpdated", data:user)
         }
         return user
     }
@@ -109,7 +109,7 @@ class TestSecurityService implements CrmSecurityService {
 
     boolean deleteUser(String username) {
         def user = getUserInfo(username)
-        publishEvent(new UserDeletedEvent(user))
+        event(for: "crm", topic: "userDeleted", data:user)
         return true
     }
 
@@ -126,7 +126,7 @@ class TestSecurityService implements CrmSecurityService {
         def n = tenants.size() + 1
         def t = [id: n, name: "Tenant #$n", owner: "user$n"]
         tenants << t
-        publishEvent(new TenantCreatedEvent(t))
+        event(for: "crm", topic: "tenantCreated", data:t)
         return t
     }
 
@@ -195,7 +195,7 @@ class TestSecurityService implements CrmSecurityService {
 
     boolean deleteTenant(Long tenantId) {
         def tenant = getTenantInfo(tenantId)
-        publishEvent(new TenantDeletedEvent(tenant))
+        event(for: "crm", topic: "tenantDeleted", data: tenant)
         return true
     }
 

@@ -22,7 +22,7 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "0.9.9.5"
+    def version = "0.9.9.6"
     def grailsVersion = "2.0 > *"
     def dependsOn = [:]
     def pluginExcludes = [
