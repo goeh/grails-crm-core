@@ -35,6 +35,14 @@ class CrmCoreTagLibTests {
         assert applyTemplate("<crm:user>\${username}</crm:user>") == "test"
     }
 
+    void testOtherUserInfo() {
+        def taglib = applicationContext.getBean(CrmCoreTagLib)
+        taglib.crmSecurityService = [isAuthenticated: {true}, getCurrentUser: {[username: "test", name: "Test User"]},
+            getUserInfo: {uname -> [username: uname, name: uname.toUpperCase()]}]
+        // Make sure tag returns the user info we specified.
+        assert applyTemplate("<crm:user username=\"foo\">\${name}</crm:user>") == "FOO"
+    }
+
     void testMissingPlugin() {
         def taglib = applicationContext.getBean(CrmCoreTagLib)
         taglib.pluginManager = this

@@ -16,20 +16,35 @@
 
 package grails.plugins.crm.core
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.context.ApplicationContext
+
 /**
  * Convenience class for use with Groovy closures.
  */
 class ClosureDelegate {
-    def methodDelegate
-    def props
-    def grailsApplication
-    def model
+    final GrailsApplication grailsApplication
+    final ApplicationContext applicationContext
+    final Object methodDelegate
+    final Map props
+    final Map model
 
-    ClosureDelegate(md, app, m, Map concreteProps) {
-        methodDelegate = md
-        props = concreteProps
-        grailsApplication = app
-        model = m
+    ClosureDelegate(Object delegate, GrailsApplication app, Map model, Map concreteProps) {
+        this.methodDelegate = delegate
+        this.props = concreteProps
+        this.model = model
+        this.grailsApplication = app
+        if(app != null) {
+            this.applicationContext = app.mainContext
+        }
+    }
+
+    /**
+     * Clients can use both 'application' and 'grailsApplication' to get the same instance.
+     * @return the GrailsApplication instance set in the constructor.
+     */
+    GrailsApplication getApplication() {
+        grailsApplication
     }
 
     /**
@@ -40,9 +55,10 @@ class ClosureDelegate {
             return this.@props[name]
         } else if (this.@model.containsKey(name)) {
             return this.@model[name]
-        } else {
-            return this.@grailsApplication.mainContext.getBean(name)
+        } else if(this.@applicationContext.containsBean(name)) {
+            return this.@applicationContext.getBean(name)
         }
+        return null
     }
 
     def methodMissing(String name, args) {

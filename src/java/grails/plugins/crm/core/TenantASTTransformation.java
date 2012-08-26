@@ -40,7 +40,7 @@ public class TenantASTTransformation implements ASTTransformation {
 
     public void visit(ASTNode[] nodes, SourceUnit sourceUnit) {
 
-        System.out.println("Modifying source unit " + sourceUnit.getName());
+        //System.out.println("Modifying source unit " + sourceUnit.getName());
 
         ExpandoMetaClass.disableGlobally();
 

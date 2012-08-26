@@ -31,20 +31,22 @@ abstract class CrmLookupEntity {
     String description
 
     static constraints = {
-        name(maxSize:80, blank:false, unique:'tenantId')
-        param(maxSize:20, nullable:true)
-        icon(maxSize:100, nullable:true)
-        description(maxSize:2000, nullable:true, widget:'textarea')
+        name(maxSize: 80, blank: false, unique: 'tenantId')
+        param(maxSize: 20, nullable: true)
+        icon(maxSize: 100, nullable: true)
+        description(maxSize: 2000, nullable: true, widget: 'textarea')
     }
     static mapping = {
         sort 'orderIndex'
-        cache usage:'nonstrict-read-write'
+        cache usage: 'nonstrict-read-write'
     }
 
-    static searchable = [only : ['name','description']]
+    static searchable = [only: ['name', 'description']]
+
+    static final BIND_WHITELIST = ['orderIndex', 'enabled', 'name', 'param', 'icon', 'description'].asImmutable()
 
     def beforeValidate() {
-        if(orderIndex == 0) {
+        if (orderIndex == 0) {
             def tenant = TenantUtils.getTenant()
             def mx
             withNewSession {
@@ -55,7 +57,7 @@ abstract class CrmLookupEntity {
                     eq('tenantId', tenant)
                 }
             }
-            orderIndex = mx ? mx + 10 : 10
+            orderIndex = mx ? mx + 1 : 1
         }
     }
 

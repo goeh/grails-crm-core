@@ -25,10 +25,11 @@ import java.security.MessageDigest
  */
 class TestSecurityService implements CrmSecurityService {
 
-    def tenants = [[id: 1L, name: "Default Tenant", type: "dummy", user: [username: "nobody", email: "nobody@unknown.net"],
+    def tenants = [[id: 1L, name: "Default Tenant", user: [username: "nobody", email: "nobody@unknown.net"],
             options: [], dateCreated: new Date(), expires: (new Date() + 10)]]
     def user = [guid: "576793b8-106d-4d60-bb26-e953c874d501", username: "nobody", name: "Nobody", email: "nobody@unknown.net",
             enabled: true, timezone: TimeZone.getDefault(), roles: [], permissions: []]
+    def aliases = [:]
 
     /**
      * Checks if the current user is authenticated in this session.
@@ -117,12 +118,12 @@ class TestSecurityService implements CrmSecurityService {
      * Create a new tenant.
      *
      * @param tenantName name of tenant
-     * @param tenantType type of tenant
      * @param parent optional parent tenant
      * @param owner username of tenant owner
+     * @param locale default locale for the tenant
      * @return
      */
-    Map<String, Object> createTenant(String tenantName, String tenantType, Long parent, String owner) {
+    Map<String, Object> createTenant(String tenantName, Long parent = null, String owner = null, Locale locale = null) {
         def n = tenants.size() + 1
         def t = [id: n, name: "Tenant #$n", owner: "user$n"]
         tenants << t
@@ -197,6 +198,26 @@ class TestSecurityService implements CrmSecurityService {
         def tenant = getTenantInfo(tenantId)
         event(for: "crm", topic: "tenantDeleted", data: tenant)
         return true
+    }
+
+    void addPermissionToUser(String permission, String username, Long tenant) {
+        user.permissions << permission
+    }
+
+    void addPermissionToRole(String permission, String roleName, Long tenant) {
+        user.roles.get(roleName, [name:roleName, permissions:[]]).permissions << permission
+    }
+
+    void addPermissionAlias(String name, List<String> permissions) {
+        aliases.get(name, []).addAll(permissions)
+    }
+
+    boolean removePermissionAlias(String name) {
+        aliases.remove(name)
+    }
+
+    List<String> getPermissionAlias(String name) {
+        aliases[name]?.asImmutable()
     }
 
     private static final int hashIterations = 1000

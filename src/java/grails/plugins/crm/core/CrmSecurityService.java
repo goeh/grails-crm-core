@@ -19,6 +19,7 @@ package grails.plugins.crm.core;
 import groovy.lang.Closure;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -61,7 +62,7 @@ public interface CrmSecurityService {
     /**
      * Update an existing user.
      *
-     * @param username username
+     * @param username   username
      * @param properties key/value pairs to update
      * @return user information after update
      */
@@ -93,17 +94,17 @@ public interface CrmSecurityService {
      * Create new tenant.
      *
      * @param tenantName name of tenant
-     * @param tenantType type of tenant
      * @param parent     optional parent tenant
      * @param owner      username of tenant owner
+     * @param locale     default locale for the tenant
      * @return info about newly created tenant (DAO)
      */
-    Map<String, Object> createTenant(String tenantName, String tenantType, Long parent, String owner);
+    Map<String, Object> createTenant(String tenantName, Long parent, String owner, Locale locale);
 
     /**
      * Update tenant properties.
      *
-     * @param tenantId id of tenant to update
+     * @param tenantId   id of tenant to update
      * @param properties key/value pairs to update
      * @return tenant information after update
      */
@@ -147,6 +148,46 @@ public interface CrmSecurityService {
      * @return true if the tenant was deleted
      */
     boolean deleteTenant(Long id);
+
+    /**
+     * Add permission to a user.
+     *
+     * @param permission permission to add, the format is security implementation specific
+     * @param username username of user
+     * @param tenant tenant ID
+     */
+    void addPermissionToUser(String permission, String username, Long tenant);
+
+    /**
+     * Add permission to tenant role.
+     *
+     * @param permission permission to add, the format is security implementation specific
+     * @param roleName name of role
+     * @param tenant tenant ID
+     */
+    void addPermissionToRole(String permission, String roleName, Long tenant);
+
+    /**
+     * Add a permission alias.
+     *
+     * @param name name of permission
+     * @param permissions list of permission strings represented by this alias
+     */
+    void addPermissionAlias(String name, List<String> permissions);
+
+    /**
+     * Return a list of permission string represented by an alias.
+     * @param name alias name
+     * @return list of permission strings
+     */
+    List<String> getPermissionAlias(String name);
+
+    /**
+     * Remove a permission alias from the system.
+     * @param name alias name
+     * @return true of the alias was removed, false otherwise
+     */
+    boolean removePermissionAlias(String name);
 
     Object hashPassword(String password, byte[] salt);
 

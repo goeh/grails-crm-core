@@ -18,7 +18,6 @@ package grails.plugins.crm.core;
 import groovy.lang.Closure;
 
 /**
- *
  * @author Goran Ehrsson
  */
 public class TenantUtils {
@@ -31,7 +30,7 @@ public class TenantUtils {
 
     public static Long getTenant() {
         Long tenant = contextHolder.get();
-        if(tenant == null) {
+        if (tenant == null) {
             tenant = Long.valueOf(0);
         }
         return tenant;
@@ -44,11 +43,15 @@ public class TenantUtils {
     public static Object withTenant(Long tenantId, Closure work) {
         Object rval = null;
         final Long previousTenantId = TenantUtils.getTenant();
-        try {
-            TenantUtils.setTenant(tenantId);
+        if ((previousTenantId != null) && !previousTenantId.equals(tenantId)) {
+            try {
+                TenantUtils.setTenant(tenantId);
+                rval = work.call();
+            } finally {
+                TenantUtils.setTenant(previousTenantId);
+            }
+        } else {
             rval = work.call();
-        } finally {
-            TenantUtils.setTenant(previousTenantId);
         }
         return rval;
     }

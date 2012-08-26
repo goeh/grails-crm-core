@@ -25,14 +25,14 @@ class CrmCoreTagLib {
     def crmSecurityService
 
     def noUser = {attrs, body ->
-        def principal = crmSecurityService.getCurrentUser()
+        def principal = attrs.username ? crmSecurityService.getUserInfo(attrs.username) : crmSecurityService.getCurrentUser()
         if (!principal) {
             out << body()
         }
     }
 
     def user = {attrs, body ->
-        def principal = crmSecurityService.getCurrentUser()
+        def principal = attrs.username ? crmSecurityService.getUserInfo(attrs.username) : crmSecurityService.getCurrentUser()
         if (principal) {
             out << body(principal as Map)
         }

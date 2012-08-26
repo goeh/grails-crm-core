@@ -40,7 +40,7 @@ class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
         crmSecurityService.currentUser.name == 'Nobody'
 
         when:
-        crmSecurityService.updateUser("nobody", [name:"Someone"])
+        crmSecurityService.updateUser("nobody", [name: "Someone"])
 
         then:
         crmSecurityService.currentUser.name == 'Someone'
@@ -63,7 +63,6 @@ class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
         then:
         tenant.id == 1
         tenant.name == 'Default Tenant'
-        tenant.type == 'dummy'
         tenant.user.username == 'nobody'
     }
 
@@ -95,5 +94,27 @@ class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
         }
         then:
         t == 1
+    }
+
+    def "add permission alias"() {
+        when:
+        crmSecurityService.addPermissionAlias("foo", ['create', 'read', 'update'])
+
+        then:
+        crmSecurityService.getPermissionAlias("foo").containsAll(['create', 'read', 'update'])
+        crmSecurityService.getPermissionAlias("foo").contains('delete') == false
+
+        when:
+        crmSecurityService.addPermissionAlias("foo", ['delete'])
+
+        then:
+        crmSecurityService.getPermissionAlias("foo").containsAll(['create', 'read', 'update', 'delete'])
+
+
+        when:
+        crmSecurityService.removePermissionAlias("foo")
+
+        then:
+        crmSecurityService.getPermissionAlias("foo") == null
     }
 }
