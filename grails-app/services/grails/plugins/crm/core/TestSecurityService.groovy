@@ -118,14 +118,13 @@ class TestSecurityService implements CrmSecurityService {
      * Create a new tenant.
      *
      * @param tenantName name of tenant
-     * @param parent optional parent tenant
-     * @param owner username of tenant owner
-     * @param locale default locale for the tenant
-     * @return
+     * @param params     optional parameters/options
+     * @param initializer code that is executed after the tenant has been created, but before event 'tenantCreated' fires
+     * @return info about newly created tenant (DAO)
      */
-    Map<String, Object> createTenant(String tenantName, Long parent = null, String owner = null, Locale locale = null) {
+    Map<String, Object> createTenant(String tenantName, Map<String, Object> params = [:], Closure initializer = null) {
         def n = tenants.size() + 1
-        def t = [id: n, name: "Tenant #$n", owner: "user$n"]
+        def t = [id: n, name: "Tenant #$n", owner: user]
         tenants << t
         event(for: "crm", topic: "tenantCreated", data:t)
         return t

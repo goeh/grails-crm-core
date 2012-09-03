@@ -91,15 +91,14 @@ public interface CrmSecurityService {
     boolean deleteUser(String username);
 
     /**
-     * Create new tenant.
+     * Create new tenant, owned by the current executing user.
      *
      * @param tenantName name of tenant
-     * @param parent     optional parent tenant
-     * @param owner      username of tenant owner
-     * @param locale     default locale for the tenant
+     * @param params     optional parameters/options
+     * @param initializer code that is executed after the tenant has been created, but before event 'tenantCreated' fires
      * @return info about newly created tenant (DAO)
      */
-    Map<String, Object> createTenant(String tenantName, Long parent, String owner, Locale locale);
+    Map<String, Object> createTenant(String tenantName, Map<String, Object> params, Closure initializer);
 
     /**
      * Update tenant properties.

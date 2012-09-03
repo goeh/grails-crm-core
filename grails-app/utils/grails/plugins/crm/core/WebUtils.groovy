@@ -70,6 +70,16 @@ class WebUtils {
         return "${(b / 1024 + 0.512).intValue()} kB"
     }
 
+    static void renderFile(def response, File file, String encoding = 'UTF-8') {
+        response.setContentLength(file.length().intValue())
+        response.setCharacterEncoding(encoding)
+        file.withInputStream {is ->
+            def out = response.outputStream
+            out << is
+            out.flush()
+        }
+    }
+
     static void withResponseWriter(response, encoding, closure = null) {
         if (closure == null && encoding instanceof Closure) {
             closure = encoding

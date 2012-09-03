@@ -97,7 +97,7 @@ class CrmCoreTagLib {
 
     def decorate = {attrs, body ->
         def result = WebUtils.decorateText(body().toString().trim(), attrs.max ? Integer.valueOf(attrs.max) : 0)
-        if(attrs.encode) {
+        if (attrs.encode) {
             result = result."encodeAs${attrs.encode}"()
         } else {
             result = result.encodeAsHTML()
@@ -161,4 +161,27 @@ class CrmCoreTagLib {
         }
     }
 
+    def tenantOption = {attrs, body ->
+        def option = attrs.name
+        if (!option) {
+            out << "Tag [tenantOption] missing required attribute [name]"
+            return
+        }
+        def id = attrs.tenant ? Long.valueOf(attrs.tenant.toString()) : TenantUtils.tenant
+        def tenant = crmSecurityService.getTenantInfo(id)
+        if (tenant) {
+            def value = tenant.options[option]
+            def render = false
+            if (attrs.eq && (attrs.eq == value)) {
+                render = true
+            } else if (attrs.ne && (attrs.ne != value)) {
+                render = true
+            } else if (value) {
+                render = true
+            }
+            if (render) {
+                out << body()
+            }
+        }
+    }
 }
