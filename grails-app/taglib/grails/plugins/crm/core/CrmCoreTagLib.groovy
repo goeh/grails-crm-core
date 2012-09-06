@@ -25,35 +25,35 @@ class CrmCoreTagLib {
     def crmSecurityService
 
     def noUser = {attrs, body ->
-        def principal = attrs.username ? crmSecurityService.getUserInfo(attrs.username) : crmSecurityService.getCurrentUser()
+        def principal = attrs.username ? crmSecurityService?.getUserInfo(attrs.username) : crmSecurityService?.getCurrentUser()
         if (!principal) {
             out << body()
         }
     }
 
     def user = {attrs, body ->
-        def principal = attrs.username ? crmSecurityService.getUserInfo(attrs.username) : crmSecurityService.getCurrentUser()
+        def principal = attrs.username ? crmSecurityService?.getUserInfo(attrs.username) : crmSecurityService?.getCurrentUser()
         if (principal) {
             out << body(principal as Map)
         }
     }
 
     def noTenant = {attrs, body ->
-        def tenant = crmSecurityService.currentTenant
+        def tenant = crmSecurityService?.currentTenant
         if (!tenant) {
             out << body()
         }
     }
 
     def tenant = {attrs, body ->
-        def tenant = crmSecurityService.currentTenant
+        def tenant = crmSecurityService?.currentTenant
         if (tenant) {
             out << body(tenant as Map)
         }
     }
 
     def eachTenant = {attrs, body ->
-        def list = crmSecurityService.getTenants()
+        def list = crmSecurityService?.getTenants()
         list.eachWithIndex {s, i ->
             def map = [(attrs.var ?: 'it'): s]
             if (attrs.status) {
@@ -68,7 +68,7 @@ class CrmCoreTagLib {
         if (!perm) {
             throwTagError("Tag [hasPermission] is missing required attribute [permission]")
         }
-        if (crmSecurityService.isPermitted(perm)) {
+        if (crmSecurityService?.isPermitted(perm)) {
             out << body()
         }
     }
@@ -168,7 +168,7 @@ class CrmCoreTagLib {
             return
         }
         def id = attrs.tenant ? Long.valueOf(attrs.tenant.toString()) : TenantUtils.tenant
-        def tenant = crmSecurityService.getTenantInfo(id)
+        def tenant = crmSecurityService?.getTenantInfo(id)
         if (tenant) {
             def value = tenant.options[option]
             def render = false

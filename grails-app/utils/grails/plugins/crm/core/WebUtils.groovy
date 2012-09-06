@@ -50,24 +50,15 @@ class WebUtils {
     static void attachmentHeaders(HttpServletResponse response, String mimetype, String filename) {
         response.setHeader("Content-disposition", "attachment; filename=${filename}")
         response.contentType = mimetype
-        response.characterEncoding = "ISO-8859-1"
-        WebUtils.shortCache(response)
+        //response.characterEncoding = "ISO-8859-1"
+        shortCache(response)
     }
 
     static void inlineHeaders(HttpServletResponse response, String mimetype, String filename) {
         response.setHeader("Content-disposition", "inline; filename=${filename}")
         response.contentType = mimetype
-        response.characterEncoding = "ISO-8859-1"
-        WebUtils.shortCache(response)
-    }
-
-    static String bytesFormatted(b) {
-        if (b < 1024) {
-            return b.toString()
-        } else if (b > (1024 * 10000)) {
-            return "${(b / 1024000 + 0.512).intValue()} MB"
-        }
-        return "${(b / 1024 + 0.512).intValue()} kB"
+        //response.characterEncoding = "ISO-8859-1"
+        shortCache(response)
     }
 
     static void renderFile(def response, File file, String encoding = 'UTF-8') {
@@ -106,6 +97,15 @@ class WebUtils {
         }
     }
 
+    static String bytesFormatted(b) {
+        if (b < 1024) {
+            return b.toString()
+        } else if (b > (1024 * 10000)) {
+            return "${(b / 1024000 + 0.512).intValue()} MB"
+        }
+        return "${(b / 1024 + 0.512).intValue()} kB"
+    }
+
     static String decorateText(String text, int maxLen = 0) {
         if (text == null) {
             return ''
@@ -113,7 +113,7 @@ class WebUtils {
         if (maxLen > 0 && text.length() > maxLen) {
             text = StringUtils.abbreviate(text, maxLen)
         }
-        def decorators = [] // TODO How to add decorators? Grails artifacts!?
+        def decorators = [] // TODO How to add decorators? Grails artifacts!? Answer decorator plugin!!!
         for (d in decorators) {
             text = d.decorateText(text)
         }
