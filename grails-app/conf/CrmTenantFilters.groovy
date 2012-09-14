@@ -17,7 +17,11 @@
 
 import grails.plugins.crm.core.TenantUtils
 
+import javax.servlet.http.HttpServletResponse
+
 /**
+ * Allow clients to specify tenant in request URL.
+ * A check is made to ensure that the authenticated user has access to the given tenant.
  *
  * @author Goran Ehrsson
  * @since 0.1
@@ -29,12 +33,15 @@ class CrmTenantFilters {
     def filters = {
         tenantCheck(uri: '/**') {
             before = {
-                // If tenant parameter is specified in the request then use it.
-                // Necessary permission checks are performed by application logic.
                 def tenant = params.long('tenant')
                 if(session) {
                     if(tenant) {
-                        session.tenant = tenant
+                        if (crmSecurityService.isValidTenant(tenant)) {
+                            session.tenant = tenant
+                        } else {
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN)
+                            return
+                        }
                     } else {
                         tenant = session.tenant
                     }
