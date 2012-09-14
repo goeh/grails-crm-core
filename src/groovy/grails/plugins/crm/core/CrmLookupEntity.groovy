@@ -43,7 +43,7 @@ abstract class CrmLookupEntity {
 
     static searchable = [only: ['name', 'description']]
 
-    static final BIND_WHITELIST = ['orderIndex', 'enabled', 'name', 'param', 'icon', 'description'].asImmutable()
+    static List BIND_WHITELIST = ['orderIndex', 'enabled', 'name', 'param', 'icon', 'description'].asImmutable()
 
     def beforeValidate() {
         if (orderIndex == 0) {

@@ -16,6 +16,8 @@
 package grails.plugins.crm.core
 
 import java.security.MessageDigest
+import javax.servlet.http.HttpServletRequest
+import org.codehaus.groovy.grails.web.util.WebUtils
 
 /**
  * Dummy security service that is used by integration tests.
@@ -217,6 +219,12 @@ class TestSecurityService implements CrmSecurityService {
 
     List<String> getPermissionAlias(String name) {
         aliases[name]?.asImmutable()
+    }
+
+    void alert(HttpServletRequest request, String topic, String message = null) {
+        def msg = "SECURITY ALERT! $topic $message [uri=${WebUtils.getForwardURI(request)}, ip=${request.remoteAddr}, tenant=${TenantUtils.tenant}, session=${request.session?.id}]"
+        log.warn msg
+        println msg
     }
 
     private static final int hashIterations = 1000

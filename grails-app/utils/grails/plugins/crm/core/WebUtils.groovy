@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse
 import java.text.SimpleDateFormat
 import org.apache.commons.lang.StringUtils
 import javax.servlet.http.HttpServletRequest
+import org.codehaus.groovy.grails.web.util.WebUtils as GWU
 
 /**
  * Utility methods for the web layer.
@@ -129,6 +130,13 @@ class WebUtils {
             return true
         }
         return false
+    }
+
+    static String securityMessage(HttpServletRequest request, String prefix = null) {
+        if (!prefix) {
+            prefix = "SECURITY"
+        }
+        "$prefix [uri=${GWU.getForwardURI(request)}, ip=${request.remoteAddr}, tenant=${TenantUtils.tenant}, session=${request.session?.id}]"
     }
 }
 

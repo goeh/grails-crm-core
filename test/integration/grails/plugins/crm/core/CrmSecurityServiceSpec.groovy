@@ -16,9 +16,12 @@
 
 package grails.plugins.crm.core
 
+import org.springframework.mock.web.MockHttpServletRequest
+
 class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
 
     def crmSecurityService
+    def grailsApplication
 
     def "current user is nobody by default"() {
         expect:
@@ -116,5 +119,10 @@ class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
 
         then:
         crmSecurityService.getPermissionAlias("foo") == null
+    }
+
+    def "security alert"() {
+        expect:
+        crmSecurityService.alert(new MockHttpServletRequest("GET", "/foo/secret/show/42"), "accessDenied") == null
     }
 }

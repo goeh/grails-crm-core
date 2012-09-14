@@ -119,6 +119,11 @@ class CrmCoreTagLib {
             def params = [:]
             params.putAll(view)
 
+            def perm = view['permission']
+            if(perm && !crmSecurityService?.isPermitted(perm)) {
+                continue
+            }
+
             // isVisible is closure or null/false
             def isVisible = view['visible']
             def closureDelegate

@@ -18,6 +18,7 @@ package grails.plugins.crm.core;
 
 import groovy.lang.Closure;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -187,6 +188,14 @@ public interface CrmSecurityService {
      * @return true of the alias was removed, false otherwise
      */
     boolean removePermissionAlias(String name);
+
+    /**
+     * Alert system about a possible security breach.
+     * @param request the offending request
+     * @param topic topic (for example: 'accessDenied')
+     * @param message informative message
+     */
+    void alert(HttpServletRequest request, String topic, String message);
 
     Object hashPassword(String password, byte[] salt);
 
