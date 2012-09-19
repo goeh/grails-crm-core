@@ -139,7 +139,7 @@ abstract class DateUtils {
     static Date duration(Date dateFrom, Date dateTo) {
         def d = null
         if(dateFrom && dateTo) {
-            use( org.codehaus.groovy.runtime.TimeCategory ){
+            use( groovy.time.TimeCategory ){
                 d = (dateTo - dateFrom).toMilliseconds()
             }
         }
@@ -247,7 +247,7 @@ abstract class DateUtils {
                 arr[0] = arr[0] % 365
             }
             if((arr[0] + arr[1] + arr[2]) > 0) {
-                use( org.codehaus.groovy.runtime.TimeCategory ){
+                use( groovy.time.TimeCategory ){
                     rval = new Date(new Duration(arr[0], arr[1], arr[2], 0, 0 ).toMilliseconds())
                 }
             }

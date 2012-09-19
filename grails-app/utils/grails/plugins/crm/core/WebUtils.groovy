@@ -16,6 +16,7 @@
 package grails.plugins.crm.core
 
 import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.HttpSession
 import java.text.SimpleDateFormat
 import org.apache.commons.lang.StringUtils
 import javax.servlet.http.HttpServletRequest
@@ -98,7 +99,16 @@ class WebUtils {
         }
     }
 
-    static String bytesFormatted(b) {
+    /**
+     * Returns a human friendly representation of number of bytes.
+     * 0-1024 is presented as is
+     * 1025-10240000 is presented as kB
+     * > 10240000 is presented as MB
+     *
+     * @param b number of bytes
+     * @return human friendly representation (kB, MB)
+     */
+    static String bytesFormatted(Number b) {
         if (b < 1024) {
             return b.toString()
         } else if (b > (1024 * 10000)) {
@@ -121,6 +131,14 @@ class WebUtils {
         return text.replace('\n', '<br/>\n')
     }
 
+    /**
+     * Delete a cookie.
+     *
+     * @param request HTTP request
+     * @param response HTTP response
+     * @param cookieName name of cookie to delete
+     * @return true if the cookie was present before deleting it, false if it was not present
+     */
     static boolean deleteCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
         def cookie = request.cookies.find {it.name == cookieName}
         if (cookie) {
@@ -132,11 +150,67 @@ class WebUtils {
         return false
     }
 
+    /**
+     * Construct a security message to be displaye din security logs, etc.
+     *
+     * @param request offending HTTP request
+     * @param prefix message prefix (default = "SECURITY")
+     * @return String containing requested URL, client IP address, requested tenant and session id
+     */
     static String securityMessage(HttpServletRequest request, String prefix = null) {
         if (!prefix) {
             prefix = "SECURITY"
         }
         "$prefix [uri=${GWU.getForwardURI(request)}, ip=${request.remoteAddr}, tenant=${TenantUtils.tenant}, session=${request.session?.id}]"
+    }
+
+    /**
+     * Return session data associated with a tenant.
+     *
+     * @param request HTTP request
+     * @param key key under which data is stored
+     * @param tenant tenant or null/omitted for current tenant
+     * @return data referenced by the specified key
+     */
+    static Serializable getTenantData(HttpServletRequest request, String key, Long tenant = null) {
+        if (tenant == null) {
+            tenant = TenantUtils.tenant
+        }
+        HttpSession session = request.getSession(true)
+        Map<Long, Map<String, Serializable>> tenants = session.TENANTS
+        if (!tenants) {
+            return null
+        }
+        return tenants[tenant]?.get(key)
+    }
+
+    /**
+     * Set session data associated with a tenant.
+     *
+     * @param request HTTP request
+     * @param key key under which data is to be stored
+     * @param data data to store (must be serializable)
+     * @param tenant tenant or null/omitted for current tenant
+     */
+    static void setTenantData(HttpServletRequest request, String key, Serializable data, Long tenant = null) {
+        if (tenant == null) {
+            tenant = TenantUtils.tenant
+        }
+        HttpSession session = request.getSession(true)
+        Map<Long, Map<String, Serializable>> tenants = session.TENANTS
+        if (!tenants) {
+            tenants = session.TENANTS = [:]
+        }
+        Map tenantData = tenants[tenant]
+        if (tenantData) {
+            if (data != null) {
+                tenantData.put(key, data)
+            } else {
+                tenantData.remove(key) // Don't store null values
+            }
+        } else if (data != null) {
+            tenants.get(tenant, [:]).put(key, data)
+        }
     }
 }
 
