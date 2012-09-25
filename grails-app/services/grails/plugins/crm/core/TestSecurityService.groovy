@@ -25,20 +25,25 @@ import org.codehaus.groovy.grails.web.util.WebUtils
  * @author Goran Ehrsson
  * @since 1.0
  */
-class TestSecurityService implements CrmSecurityService {
+class TestSecurityService {
 
     def tenants = [[id: 1L, name: "Default Tenant", user: [username: "nobody", email: "nobody@unknown.net"],
             options: [], dateCreated: new Date(), expires: (new Date() + 10)]]
-    def user = [guid: "576793b8-106d-4d60-bb26-e953c874d501", username: "nobody", name: "Nobody", email: "nobody@unknown.net",
-            enabled: true, timezone: TimeZone.getDefault(), roles: [], permissions: []]
+    def users = [admin: [guid: "630b87ee-df20-4791-98db-2fc3f290ed0f", username: "admin", name: "Administrator", email: "admin@unknown.net",
+            enabled: true, timezone: TimeZone.getDefault(), roles: ['admin'], permissions: ['*:*']],
+            nobody: [guid: "576793b8-106d-4d60-bb26-e953c874d501", username: "nobody", name: "Nobody", email: "nobody@unknown.net",
+                    enabled: true, timezone: TimeZone.getDefault(), roles: [], permissions: []]
+    ]
     def aliases = [:]
+
+    CrmSecurityDelegate crmSecurityDelegate
 
     /**
      * Checks if the current user is authenticated in this session.
      * @return
      */
     boolean isAuthenticated() {
-        true
+        crmSecurityDelegate.isAuthenticated()
     }
 
     /**
@@ -47,7 +52,7 @@ class TestSecurityService implements CrmSecurityService {
      * @return
      */
     boolean isPermitted(Object permission) {
-        true
+        crmSecurityDelegate.isPermitted(permission)
     }
 
     /**
@@ -57,14 +62,11 @@ class TestSecurityService implements CrmSecurityService {
      * @return
      */
     def runAs(String username, Closure closure) {
-        def restore = user.username
-        try {
-            user.username = username
-            closure.call()
-        } finally {
-            user.username = restore
-        }
+        crmSecurityDelegate.runAs(username, closure)
     }
+
+
+    // ==============================================================================================
 
     /**
      * Create a new user.
@@ -73,8 +75,11 @@ class TestSecurityService implements CrmSecurityService {
      * @return
      */
     Map<String, Object> createUser(Map<String, Object> properties) {
-        def user = getCurrentUser()
-        event(for: "crm", topic: "userCreated", data:user)
+        crmSecurityDelegate.createUser(properties.username, properties.password)
+        users[properties.username] = [guid: UUID.randomUUID().toString(), username: properties.username, name: properties.name, email: properties.email,
+                enabled: properties.enabled ? true : false, timezone: TimeZone.getDefault(), roles: [], permissions: []]
+        def user = getUserInfo(properties.username)
+        event(for: "crm", topic: "userCreated", data: user)
         return user
     }
 
@@ -86,11 +91,21 @@ class TestSecurityService implements CrmSecurityService {
      * @return user information after update
      */
     Map<String, Object> updateUser(String username, Map<String, Object> properties) {
-        if(username == user.username) {
-            user.putAll(properties)
-            event(for: "crm", topic: "userUpdated", data:user)
+        def map = users[username]
+        if (!map) {
+            throw new IllegalArgumentException("User [$username] not found")
         }
-        return user
+        def password = properties.remove('password')
+        properties.each {key, value ->
+            if (map.containsKey(key)) {
+                map[key] = value
+            }
+        }
+        if (password) {
+            crmSecurityDelegate.setPassword(properties.username, properties.password)
+        }
+        event(for: "crm", topic: "userUpdated", data: map)
+        return map
     }
 
     /**
@@ -98,7 +113,7 @@ class TestSecurityService implements CrmSecurityService {
      * @return
      */
     Map<String, Object> getCurrentUser() {
-        user
+        users[crmSecurityDelegate.getCurrentUser()]
     }
 
     /**
@@ -107,20 +122,24 @@ class TestSecurityService implements CrmSecurityService {
      * @return
      */
     Map<String, Object> getUserInfo(String username) {
-        return getCurrentUser()
+        users[username]
     }
 
     boolean deleteUser(String username) {
-        def user = getUserInfo(username)
-        event(for: "crm", topic: "userDeleted", data:user)
-        return true
+        if (users.containsKey(username)) {
+            def map = users.remove(username)
+            crmSecurityDelegate.deleteUser(username)
+            event(for: "crm", topic: "userDeleted", data: map)
+            return true
+        }
+        return false
     }
 
     /**
      * Create a new tenant.
      *
      * @param tenantName name of tenant
-     * @param params     optional parameters/options
+     * @param params optional parameters/options
      * @param initializer code that is executed after the tenant has been created, but before event 'tenantCreated' fires
      * @return info about newly created tenant (DAO)
      */
@@ -128,7 +147,7 @@ class TestSecurityService implements CrmSecurityService {
         def n = tenants.size() + 1
         def t = [id: n, name: "Tenant #$n", owner: user]
         tenants << t
-        event(for: "crm", topic: "tenantCreated", data:t)
+        event(for: "crm", topic: "tenantCreated", data: t)
         return t
     }
 
@@ -141,7 +160,7 @@ class TestSecurityService implements CrmSecurityService {
      */
     Map<String, Object> updateTenant(Long tenantId, Map<String, Object> properties) {
         def tenant = getTenantInfo(tenantId)
-        if(tenant) {
+        if (tenant) {
             tenant.putAll(properties)
         }
         return tenant
@@ -202,11 +221,14 @@ class TestSecurityService implements CrmSecurityService {
     }
 
     void addPermissionToUser(String permission, String username, Long tenant) {
-        user.permissions << permission
+        def map = users[username]
+        if (map) {
+            map.get('permissions', []) << permission
+        }
     }
 
     void addPermissionToRole(String permission, String roleName, Long tenant) {
-        user.roles.get(roleName, [name:roleName, permissions:[]]).permissions << permission
+        // Not implemented
     }
 
     void addPermissionAlias(String name, List<String> permissions) {
@@ -227,25 +249,12 @@ class TestSecurityService implements CrmSecurityService {
         println msg
     }
 
-    private static final int hashIterations = 1000
-
     def hashPassword(String password, byte[] salt) {
-        //password.encodeAsSHA256()
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        digest.reset()
-        digest.update(salt)
-        byte[] input = digest.digest(password.getBytes("UTF-8"))
-        for (int i = 0; i < hashIterations; i++) {
-            digest.reset()
-            input = digest.digest(input)
-        }
-        return input.encodeHex().toString()
+        crmSecurityDelegate.hashPassword(password, salt)
     }
 
     byte[] generateSalt() {
-        byte[] buf = new byte[128]
-        new Random(System.currentTimeMillis()).nextBytes(buf)
-        return buf
+        crmSecurityDelegate.generateSalt()
     }
 
 }

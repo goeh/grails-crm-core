@@ -27,7 +27,8 @@ class CrmCoreGrailsPlugin {
     def dependsOn = [:]
     def pluginExcludes = [
             "grails-app/views/error.gsp",
-            "grails-app/services/grails/plugins/crm/core/TestSecurityService.groovy"
+            "grails-app/services/grails/plugins/crm/core/TestSecurityService.groovy",
+            "src/groovy/grails/plugins/crm/core/TestSecurityDelegate.groovy"
     ]
     def title = "Grails CRM Core Plugin"
     def author = "Goran Ehrsson"
@@ -50,6 +51,7 @@ Grails CRM Core Functionality.
 
     def doWithApplicationContext = { applicationContext ->
         if (applicationContext.containsBean("gormSelection")) {
+            // TODO Hack warning: soft reference to selection plugin
             applicationContext.getBean("gormSelection").fixedCriteria = {query, params ->
                 eq('tenantId', TenantUtils.tenant)
             }
