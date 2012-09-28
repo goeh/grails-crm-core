@@ -34,7 +34,7 @@ class CrmTenantFilters {
             before = {
                 def tenant = params.long('tenant')
                 if(session) {
-                    if(tenant) {
+                    if(tenant && crmSecurityService.isAuthenticated()) {
                         if (crmSecurityService.isValidTenant(tenant)) {
                             session.tenant = tenant
                         } else {
