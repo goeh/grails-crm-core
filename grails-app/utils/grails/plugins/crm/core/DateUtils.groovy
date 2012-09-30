@@ -39,7 +39,7 @@ abstract class DateUtils {
 
     static java.sql.Date parseSqlDate(String input, TimeZone tz = UTC) {
         Date date = parseDate(input, tz)
-        return date != null ? new java.sql.Date(date.getTime()) : null
+        return date != null ? new java.sql.Date(date.clearTime().getTime()) : null
     }
 
     static String format(Date date, String format, TimeZone tz = UTC) {
