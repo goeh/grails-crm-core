@@ -56,7 +56,7 @@ class CrmCoreService {
      * @return true if the object is a domain instance
      */
     boolean isDomainClass(object) {
-        grailsApplication.domainClasses*.clazz.contains(Hibernate.getClass(object))
+        grailsApplication.isDomainClass(object.getClass()) && Hibernate.getClass(object)
     }
 
     /**
