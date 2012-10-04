@@ -20,7 +20,6 @@ class CrmCoreTagLib {
     static namespace = "crm"
 
     def pluginManager
-    def groovyPagesTemplateEngine
     def crmPluginService
     def crmSecurityService
 
