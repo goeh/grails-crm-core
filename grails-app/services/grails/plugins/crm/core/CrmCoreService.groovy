@@ -37,14 +37,14 @@ class CrmCoreService {
     }
 
     boolean hasFeature(String feature, String role = null, Long tenant = null) {
-        if(crmFeatureService != null) {
+        if (crmFeatureService != null) {
             return crmFeatureService.hasFeature(feature, role, tenant)
         }
         return false
     }
 
     Map getFeature(String feature) {
-        if(crmFeatureService != null) {
+        if (crmFeatureService != null) {
             return crmFeatureService.getFeature(feature)
         }
         return null
@@ -76,21 +76,25 @@ class CrmCoreService {
 
     String getReferenceIdentifier(object) {
         def ref
-        if (isDomainClass(object)) {
-            def instance = GrailsHibernateUtil.unwrapIfProxy(object)
-            ref = GrailsNameUtils.getPropertyName(instance.class) + '@' + instance.ident()
-        } else {
-            ref = object.toString()
+        if(object != null) {
+            if (isDomainClass(object)) {
+                def instance = GrailsHibernateUtil.unwrapIfProxy(object)
+                ref = GrailsNameUtils.getPropertyName(instance.class) + '@' + instance.ident()
+            } else {
+                ref = object.toString()
+            }
         }
         return ref
     }
 
     def getReference(String identifier) {
-        def (name, key) = identifier.split('@').toList()
-        if (name && key) {
-            def domainClass = getDomainClass(name)
-            if (domainClass) {
-                return domainClass.get(key)
+        if (identifier) {
+            def (name, key) = identifier.split('@').toList()
+            if (name && key) {
+                def domainClass = getDomainClass(name)
+                if (domainClass) {
+                    return domainClass.get(key)
+                }
             }
         }
         return identifier
