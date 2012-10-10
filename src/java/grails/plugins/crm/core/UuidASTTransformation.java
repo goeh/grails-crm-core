@@ -57,15 +57,13 @@ public class UuidASTTransformation implements ASTTransformation {
 
                     PropertyNode constraints = theClass.getProperty("constraints");
                     if (constraints != null) {
-                        System.out.println("Adding guid to existing constraints closure for class " + theClass.getName());
                         if (constraints.getInitialExpression() instanceof ClosureExpression) {
                             ClosureExpression ce = (ClosureExpression) constraints.getInitialExpression();
                             ((BlockStatement) ce.getCode()).addStatement(guidConstraintExpression);
                         } else {
-                            System.out.println("Do not know how to add constraints expression to non ClosureExpression " + constraints.getInitialExpression());
+                            System.err.println("Do not know how to add constraints expression to non ClosureExpression " + constraints.getInitialExpression());
                         }
                     } else {
-                        System.out.println("Adding guid and constraints closure for class " + theClass.getName());
                         Statement[] constraintsStatement = {guidConstraintExpression};
                         BlockStatement closureBlock = new BlockStatement(constraintsStatement, null);
                         ClosureExpression constraintsClosure = new ClosureExpression(null, closureBlock);

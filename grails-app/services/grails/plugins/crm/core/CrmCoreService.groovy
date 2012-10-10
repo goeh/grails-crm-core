@@ -17,7 +17,6 @@ package grails.plugins.crm.core
 
 import grails.util.GrailsNameUtils
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.hibernate.Hibernate
 
 /**
  * Grails CRM Core Services.
@@ -56,7 +55,7 @@ class CrmCoreService {
      * @return true if the object is a domain instance
      */
     boolean isDomainClass(object) {
-        grailsApplication.isDomainClass(object.getClass()) && Hibernate.getClass(object)
+        grailsApplication.isDomainClass(GrailsHibernateUtil.unwrapIfProxy(object).getClass())
     }
 
     /**

@@ -25,7 +25,9 @@ grails.project.dependency.resolution = {
               ":release:2.0.4") {
             export = false
         }
-        runtime ":hibernate:$grailsVersion"
+        test(":hibernate:$grailsVersion") {
+            export = false
+        }
 
         test(":spock:0.6") { export = false }
         test(":codenarc:latest.integration") { export = false }
