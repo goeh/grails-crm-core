@@ -39,6 +39,17 @@ public class Pair<L, R> {
         return right;
     }
 
+    public Object getAt(final int idx) {
+        switch(idx) {
+            case 0:
+                return left;
+            case 1:
+                return right;
+            default:
+                throw new IndexOutOfBoundsException("index " + idx + " is to large for a Pair, must be < 2");
+        }
+    }
+
     @Override
     public int hashCode() {
         return left.hashCode() ^ right.hashCode();
