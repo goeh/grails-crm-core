@@ -12,10 +12,10 @@ grails.project.dependency.resolution = {
         // uncomment to disable ehcache
         // excludes 'ehcache'
     }
-    log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    log "warn"
     repositories {
+        grailsHome()
         grailsCentral()
-        //mavenCentral()
     }
     dependencies {
     }
@@ -30,7 +30,7 @@ grails.project.dependency.resolution = {
         }
 
         test(":spock:0.6") { export = false }
-        test(":codenarc:latest.integration") { export = false }
+        test(":codenarc:0.17") { export = false }
 
         compile(":platform-core:1.0.M6") { excludes 'resources' }
     }

@@ -21,28 +21,6 @@ import grails.test.mixin.TestFor
 @TestFor(CrmCoreTagLib)
 class CrmCoreTagLibTests {
 
-    void testUserIsNotAuthenticated() {
-        def taglib = applicationContext.getBean(CrmCoreTagLib)
-        taglib.crmSecurityService = [isAuthenticated: {false}, getCurrentUser: {[:]}]
-        // Make sure tag returns nothing since we are not logged in.
-        assert applyTemplate("<crm:user>\${username}</crm:user>") == ""
-    }
-
-    void testUserIsAuthenticated() {
-        def taglib = applicationContext.getBean(CrmCoreTagLib)
-        taglib.crmSecurityService = [isAuthenticated: {true}, getCurrentUser: {[username: "test", name: "Test User"]}]
-        // Make sure tag returns the principal since we are logged in.
-        assert applyTemplate("<crm:user>\${username}</crm:user>") == "test"
-    }
-
-    void testOtherUserInfo() {
-        def taglib = applicationContext.getBean(CrmCoreTagLib)
-        taglib.crmSecurityService = [isAuthenticated: {true}, getCurrentUser: {[username: "test", name: "Test User"]},
-            getUserInfo: {uname -> [username: uname, name: uname.toUpperCase()]}]
-        // Make sure tag returns the user info we specified.
-        assert applyTemplate("<crm:user username=\"foo\">\${name}</crm:user>") == "FOO"
-    }
-
     void testMissingPlugin() {
         def taglib = applicationContext.getBean(CrmCoreTagLib)
         taglib.pluginManager = this
