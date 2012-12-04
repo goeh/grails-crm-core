@@ -20,10 +20,11 @@ class CrmCoreTagLib {
     static namespace = "crm"
 
     def pluginManager
+    def crmCoreService
     def crmPluginService
     def crmSecurityService
 
-    def hasPlugin = {attrs, body ->
+    def hasPlugin = { attrs, body ->
         def plugin = attrs.name
         if (!plugin) {
             out << "Tag [hasPlugin] missing required attribute [name]"
@@ -34,7 +35,7 @@ class CrmCoreTagLib {
         }
     }
 
-    def formatBytes = {attrs ->
+    def formatBytes = { attrs ->
         def b = attrs.value
         if (b == null) {
             throwTagError("Tag [formatBytes] is missing required attribute [value]")
@@ -45,7 +46,7 @@ class CrmCoreTagLib {
         out << WebUtils.bytesFormatted(b)
     }
 
-    def decorate = {attrs, body ->
+    def decorate = { attrs, body ->
         def result = WebUtils.decorateText(body().toString().trim(), attrs.max ? Integer.valueOf(attrs.max) : 0)
         if (attrs.encode) {
             result = result."encodeAs${attrs.encode}"()
@@ -55,7 +56,21 @@ class CrmCoreTagLib {
         out << result
     }
 
-    def pluginViews = {attrs, body ->
+    def referenceLink = { attrs, body ->
+        def ref = attrs.remove('reference')
+        if (!ref) {
+            out << "Tag [referenceLink] missing required attribute [reference]"
+            return
+        }
+        def s = body().trim() ?: ref.toString()
+        ref = crmCoreService.getReferenceIdentifier(ref)
+        def (ctrl, id) = ref.split('@').toList()
+        def linkParams = [controller: ctrl, action: 'show', id: id]
+        linkParams.putAll(attrs as Map)
+        out << g.link(linkParams, s)
+    }
+
+    def pluginViews = { attrs, body ->
 
         def location = attrs.location
         if (!location) {
@@ -63,14 +78,14 @@ class CrmCoreTagLib {
             return
         }
 
-        def views = crmPluginService.getViews(controllerName, actionName, location).sort {it.index ?: (it.id ?: 99999)}
+        def views = crmPluginService.getViews(controllerName, actionName, location).sort { it.index ?: (it.id ?: 99999) }
 
         for (view in views) {
             def params = [:]
             params.putAll(view)
 
             def perm = view['permission']
-            if(perm && !crmSecurityService?.isPermitted(perm)) {
+            if (perm && !crmSecurityService?.isPermitted(perm)) {
                 continue
             }
 
