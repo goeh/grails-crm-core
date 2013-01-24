@@ -56,6 +56,26 @@ class CrmCoreTagLib {
         out << result
     }
 
+    /**
+     * Render block of markup with a domain instance as model.
+     * If the domain instance cannot be found, nothing is rendered.
+     * @attr id REQUIRED the domain instance's reference identifier (ex. crmContact@12345)
+     * @attr var name of variable (default=it) used in body as reference to the domain instance
+     */
+    def reference = { attrs, body ->
+        def ref = attrs.id
+        if (!ref) {
+            out << "Tag [reference] missing required attribute [id]"
+            return
+        }
+        def instance = crmCoreService.getReference(ref)
+        if (instance) {
+            def key = attrs.var ?: 'it'
+            def model = [(key): instance]
+            out << body(model)
+        }
+    }
+
     def referenceLink = { attrs, body ->
         def ref = attrs.remove('reference')
         if (!ref) {
