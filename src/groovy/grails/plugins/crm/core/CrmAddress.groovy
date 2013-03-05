@@ -24,6 +24,7 @@ package grails.plugins.crm.core
  */
 abstract class CrmAddress {
 
+    String addressee
     String address1 // Street Name
     String address2
     String address3
@@ -36,6 +37,7 @@ abstract class CrmAddress {
     Float longitude
 
     static constraints = {
+        addressee(maxSize: 80, nullable: true, blank: false)
         address1(maxSize: 64, nullable: true, blank: false)
         address2(maxSize: 64, nullable: true, blank: false)
         address3(maxSize: 64, nullable: true, blank: false)
@@ -48,9 +50,9 @@ abstract class CrmAddress {
         longitude(nullable: true, min: -180f, max: 180f, precision: 10, scale: 6)
     }
 
-    static transients = ['address', 'street', 'empty', 'dao']
+    static transients = ['name', 'address', 'street', 'empty', 'dao']
 
-    static List BIND_WHITELIST = ['address1', 'address2', 'address3', 'postalCode', 'city', 'region', 'country', 'timezone', 'latitude', 'longitude']
+    static List BIND_WHITELIST = ['addressee', 'address1', 'address2', 'address3', 'postalCode', 'city', 'region', 'country', 'timezone', 'latitude', 'longitude']
 
     Map toMap() {
         def map = [:]
@@ -84,17 +86,31 @@ abstract class CrmAddress {
         }
     }
 
-    boolean isEmpty() {
+    transient boolean isEmpty() {
         this.toMap().isEmpty()
     }
 
-    String getStreet() {
+    transient String getName() {
+        addressee
+    }
+
+    void setName(String arg) {
+        addressee = arg
+    }
+
+    transient String getStreet() {
         address1
     }
 
-    String getAddress(boolean includePostalCode = true, String delimiter = ', ') {
+    transient String getAddress(boolean includePostalCode = true, String delimiter = ', ') {
         StringBuilder s = new StringBuilder()
+        if (addressee) {
+            s << addressee
+        }
         if (address1) {
+            if (s.length() > 0) {
+                s << delimiter
+            }
             s << address1
         }
         if (address2) {
@@ -142,7 +158,8 @@ abstract class CrmAddress {
         getAddress(true)
     }
 
-    Map getDao() {
-        properties.subMap(['address1', 'address2', 'address3', 'postalCode', 'city', 'region', 'country', 'timezone', 'latitude', 'longitude']).findAll { it.value }
+    transient Map getDao() {
+        properties.subMap(['addressee', 'address1', 'address2', 'address3', 'postalCode', 'city',
+                'region', 'country', 'timezone', 'latitude', 'longitude']).findAll { it.value }
     }
 }
