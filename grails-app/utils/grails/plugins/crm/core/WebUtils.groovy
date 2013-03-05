@@ -110,7 +110,7 @@ class WebUtils {
      */
     static String bytesFormatted(Number b) {
         if (b < 1024) {
-            return b.toString()
+            return b.toString() + ' B'
         } else if (b > (1024 * 10000)) {
             return "${(b / 1024000 + 0.512).intValue()} MB"
         }
