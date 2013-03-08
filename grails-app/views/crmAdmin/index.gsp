@@ -25,14 +25,8 @@
             <tbody>
             <tr><td>App version</td><td><g:meta name="app.version"></g:meta></td></tr>
             <tr><td>Grails version</td><td><g:meta name="app.grails.version"></g:meta></td></tr>
-            <tr><td>Groovy version</td><td>${org.codehaus.groovy.runtime.InvokerHelper.getVersion()}</td></tr>
+            <tr><td>Groovy version</td><td>${groovy.lang.GroovySystem.getVersion()}</td></tr>
             <tr><td>JVM version</td><td>${System.getProperty('java.version')}</td></tr>
-            <!--
-            <tr><td>Controllers</td><td>${grailsApplication.controllerClasses.size()}</td></tr>
-            <tr><td>Domains</td><td>${grailsApplication.domainClasses.size()}</td></tr>
-            <tr><td>Services</td><td>${grailsApplication.serviceClasses.size()}</td></tr>
-            <tr><td>Tag Libraries</td><td>${grailsApplication.tagLibClasses.size()}</td></tr>
-            -->
             <tr><td>Tenant</td><td>${TenantUtils.tenant}</td></tr>
             </tbody>
         </table>
