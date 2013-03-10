@@ -21,7 +21,7 @@ package grails.plugins.crm.core
  * @since 0.1
  */
 @TenantEntity
-abstract class CrmLookupEntity {
+abstract class CrmLookupEntity implements Comparable {
 
     int orderIndex
     boolean enabled
@@ -90,5 +90,9 @@ abstract class CrmLookupEntity {
         result = 31 * result + (name != null ? name.hashCode() : 0)
         result = 31 * result + (param != null ? param.hashCode() : 0)
         return result
+    }
+
+    int compareTo(Object o) {
+        orderIndex.compareTo(o.orderIndex)
     }
 }

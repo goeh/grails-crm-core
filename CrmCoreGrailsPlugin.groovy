@@ -22,11 +22,12 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.0.12"
+    def version = "1.0.13"
     def grailsVersion = "2.0 > *"
     def dependsOn = [:]
     def pluginExcludes = [
             "grails-app/views/error.gsp",
+            "grails-app/domain/grails/plugins/crm/core/TestLookupEntity.groovy",
             "grails-app/services/grails/plugins/crm/core/TestSecurityService.groovy",
             "src/groovy/grails/plugins/crm/core/TestSecurityDelegate.groovy"
     ]
