@@ -18,6 +18,8 @@ package grails.plugins.crm.core
 import grails.util.GrailsNameUtils
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import java.util.regex.Pattern
+
 /**
  * Grails CRM Core Services.
  *
@@ -27,6 +29,8 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class CrmCoreService {
 
     static transactional = false
+
+    private static final Pattern DOMAIN_REFERENCE_PATTERN = ~/^(\w+)@(\d+)$/
 
     def grailsApplication
     def crmFeatureService
@@ -47,6 +51,14 @@ class CrmCoreService {
             return crmFeatureService.getFeature(feature)
         }
         return null
+    }
+
+    boolean isDomainReference(String reference) {
+        if(! reference) {
+            return false
+        }
+        def m = DOMAIN_REFERENCE_PATTERN.matcher(reference)
+        m.matches() && grailsApplication.domainClasses.find {it.propertyName == m.group(1)}
     }
 
     /**
