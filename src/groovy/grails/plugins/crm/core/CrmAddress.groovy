@@ -142,8 +142,14 @@ abstract class CrmAddress {
         getAddress(true)
     }
 
-    transient Map getDao() {
-        properties.subMap(['address1', 'address2', 'address3', 'postalCode', 'city',
-                'region', 'country', 'timezone', 'latitude', 'longitude']).findAll { it.value }
+    transient Map<String, Object> getDao() {
+        ['address1', 'address2', 'address3', 'postalCode', 'city',
+                'region', 'country', 'timezone', 'latitude', 'longitude'].inject([:]) { m, i ->
+            def v = this."$i"
+            if (v != null) {
+                m[i] = v
+            }
+            m
+        }
     }
 }
