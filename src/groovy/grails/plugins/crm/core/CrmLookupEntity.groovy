@@ -77,6 +77,7 @@ abstract class CrmLookupEntity implements Comparable {
         CrmLookupEntity that = (CrmLookupEntity) o
 
         if (id != that.id) return false
+        if (orderIndex != that.orderIndex) return false
         if (name != that.name) return false
         if (param != that.param) return false
 
@@ -87,6 +88,7 @@ abstract class CrmLookupEntity implements Comparable {
     int hashCode() {
         int result
         result = id != null ? id.intValue() : 0
+        result = 31 * result + (orderIndex != null ? orderIndex.intValue() : 0)
         result = 31 * result + (name != null ? name.hashCode() : 0)
         result = 31 * result + (param != null ? param.hashCode() : 0)
         return result
