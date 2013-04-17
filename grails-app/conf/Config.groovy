@@ -24,3 +24,9 @@ log4j = {
 }
 grails.views.default.codec="none" // none, html, base64
 grails.views.gsp.encoding="UTF-8"
+
+grails.doc.authors = "Göran Ehrsson, Technipelago AB"
+grails.doc.license = "Licensed under the Apache License, Version 2.0 (the \"License\")"
+grails.doc.copyright = "Copyright 2013 Goran Ehrsson"
+grails.doc.footer = "- Grails CRM - Core Plugin (crm-core)"
+grails.doc.images = new File("src/docs/images")

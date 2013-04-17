@@ -1,0 +1,10 @@
+introduction:
+  title: Introduction
+crm:
+  title: Grails CRM
+multitenancy:
+  title: Multitenancy
+transformations:
+  title: AST Transformations
+configuration:
+  title: Configuration

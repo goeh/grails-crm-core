@@ -1,0 +1,32 @@
+Multitenancy refers to a principle in software architecture where a single instance of the software runs on a server,
+serving multiple client organizations (tenants).
+Multitenancy is contrasted with a multi-instance architecture where separate software instances (or hardware systems)
+are set up for different client organizations. With a multitenant architecture, a software application is designed to
+virtually partition its data and configuration, and each client organization works with a customized virtual application instance.
+Multitenancy is also regarded as one of the essential attributes of cloud computing. [Wikipedia|http://en.wikipedia.org/wiki/Multitenancy]
+
+h2. Grails CRM has multitenancy built-in
+Grails CRM implements a very simple approach to multitenancy. All domain classes that are tenant-specific
+must have a @tenantId@ property of type @Long@. All code that work with tenant specific domain instances
+must handle the tenantId property "manually". There is no automatic filtering going on behind the scenes.
+
+h3. Tenant aware domain class
+To make a domain class tenant-aware you add the @TenantEntity@ annotation to the class.
+
+{code}
+@TenantEntity
+class Person {
+  String name
+}
+{code}
+
+h3. Current Tenant
+Grails CRM resolves the current executing tenant from the HTTP request.
+
+To get the current executing tenant you use @TenantUtils.getTenant()@.
+
+h3. Tenant aware query
+{code}
+def joe = Person.findByTenantIdAndName(TenantUtils.getTenant(), "Joe Average")
+{code}
+
