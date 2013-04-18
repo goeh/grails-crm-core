@@ -4,6 +4,8 @@ crm:
   title: Grails CRM
 multitenancy:
   title: Multitenancy
+security:
+  title: Security
 transformations:
   title: AST Transformations
 configuration:

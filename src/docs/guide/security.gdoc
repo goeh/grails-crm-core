@@ -1,0 +1,9 @@
+Grails CRM is designed to work with different security implementations.
+A core plugin called @crm-security@ manages generic application security and it delegates implementation specific calls to
+a sub-plugin. One such sub-plugin is @crm-securiy-shiro@ that uses [Apache Shiro|http://grails.org/plugin/shiro] for user, role and permission management.
+
+{note}
+The next security sub-plugin will be based on
+[Spring Security|http://grails.org/plugin/spring-security-core]
+and we look forward to contributions. ;-)
+{note}
