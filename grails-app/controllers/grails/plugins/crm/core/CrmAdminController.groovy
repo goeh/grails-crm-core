@@ -16,6 +16,7 @@
 package grails.plugins.crm.core
 
 /**
+ * This controller handles the admin/index page, a start page for administrative tasks.
  *
  * @author Goran Ehrsson
  * @since 0.1
@@ -42,10 +43,18 @@ class CrmAdminController {
 
     def crmCoreService
 
+    /**
+     * Index page.
+     *
+     * @return features installed application features
+     */
     def index() {
         [features: crmCoreService.installedFeatures]
     }
 
+    /**
+     * JVM metrics page.
+     */
     def jvm() {
     }
 }
