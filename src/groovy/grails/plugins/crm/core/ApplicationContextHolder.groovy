@@ -16,6 +16,8 @@
 
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
+
 import javax.servlet.ServletContext
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -36,47 +38,60 @@ import org.springframework.context.ApplicationContextAware
  * @author Burt Beckwith
  */
 @Singleton
+@CompileStatic
 class ApplicationContextHolder implements ApplicationContextAware {
 
-   private ApplicationContext ctx
+    private ApplicationContext ctx
 
-   private static final Map<String, Object> TEST_BEANS = [:]
+    private static final Map<String, Object> TEST_BEANS = [:]
 
-   void setApplicationContext(ApplicationContext applicationContext) {
-       ctx = applicationContext
-   }
+    void setApplicationContext(ApplicationContext applicationContext) {
+        ctx = applicationContext
+    }
 
-   static ApplicationContext getApplicationContext() {
-      getInstance().ctx
-   }
+    static ApplicationContext getApplicationContext() {
+        getInstance().ctx
+    }
 
-   static Object getBean(String name) {
-      TEST_BEANS[name] ?: getApplicationContext().getBean(name)
-   }
+    static Object getBean(String name) {
+        TEST_BEANS[name] ?: getApplicationContext().getBean(name)
+    }
 
-   static GrailsApplication getGrailsApplication() {
-      getBean('grailsApplication')
-   }
+    static GrailsApplication getGrailsApplication() {
+        def app = getBean('grailsApplication')
+        if (app instanceof GrailsApplication) {
+            return (GrailsApplication)app
+        }
+        throw new IllegalStateException("Illegal type for bean 'grailsApplication': ${app.class.name}")
+    }
 
-   static ConfigObject getConfig() {
-      getGrailsApplication().config
-   }
+    static ConfigObject getConfig() {
+        getGrailsApplication().config
+    }
 
-   static ServletContext getServletContext() {
-      getBean('servletContext')
-   }
+    static ServletContext getServletContext() {
+        def ctx = getBean('servletContext')
+        if (ctx instanceof ServletContext) {
+            return (ServletContext)ctx
+        }
+        throw new IllegalStateException("Illegal type for bean 'servletContext': ${ctx.class.name}")
+    }
 
-   static GrailsPluginManager getPluginManager() {
-      getBean('pluginManager')
-   }
+    static GrailsPluginManager getPluginManager() {
+        def mgr = getBean('pluginManager')
+        if (mgr instanceof GrailsPluginManager) {
+            return (GrailsPluginManager)mgr
+        }
+        throw new IllegalStateException("Illegal type for bean 'pluginManager': ${mgr.class.name}")
+    }
 
-   // For testing
-   static void registerTestBean(String name, bean) {
-      TEST_BEANS[name] = bean
-   }
+    // For testing
+    static void registerTestBean(String name, bean) {
+        TEST_BEANS[name] = bean
+    }
 
-   // For testing
-   static void unregisterTestBeans() {
-      TEST_BEANS.clear()
-   }
+    // For testing
+    static void unregisterTestBeans() {
+        TEST_BEANS.clear()
+    }
 }

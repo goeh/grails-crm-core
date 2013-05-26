@@ -70,7 +70,9 @@ abstract class CrmAddress {
      */
     CrmAddress copy() {
         def a = getClass().newInstance()
-        a.properties = toMap()
+        this.toMap().each { k, v ->
+            a."$k" = v
+        }
         return a
     }
 

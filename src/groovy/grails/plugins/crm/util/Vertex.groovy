@@ -16,14 +16,24 @@
 
 package grails.plugins.crm.util
 
+import groovy.transform.CompileStatic
+
 /**
  * A simple vertex.
  */
-class Vertex {
-    Object obj
+@CompileStatic
+final class Vertex {
+    private final Object obj
 
     Vertex(Object arg) {
+        if(arg == null) {
+            throw new IllegalArgumentException("A null argument was sent to Vertex constructor")
+        }
         this.obj = arg
+    }
+
+    Object getObj() {
+        obj
     }
 
     String toString() {

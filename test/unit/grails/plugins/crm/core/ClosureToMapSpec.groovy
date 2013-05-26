@@ -24,14 +24,14 @@ import spock.lang.Specification
 class ClosureToMapSpec extends Specification {
 
     def "1-level Map"() {
-        when:
+        when: "convert a Closure to a Map"
         def map = ClosureToMap.convert {
             oneString "A"
             listOfStrings "A", "B"
             aMap foo:42, bar:4711
         }
 
-        then:
+        then: "Map is initialized correct"
         map.oneString == "A"
         map.listOfStrings.size() == 2
         map.listOfStrings == ["A", "B"]
@@ -40,7 +40,7 @@ class ClosureToMapSpec extends Specification {
     }
 
     def "2-level Map"() {
-        when:
+        when: "convert a Closure to a Map"
         def map = ClosureToMap.convert {
             volvo {
                 model "V70"
@@ -62,7 +62,7 @@ class ClosureToMapSpec extends Specification {
             }
         }
 
-        then:
+        then: "Map is initialized correct"
         map.size() == 2
         map.volvo.model == "V70"
         map.ford.model == "Focus"

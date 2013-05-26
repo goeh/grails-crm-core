@@ -16,19 +16,22 @@
 
 package grails.plugins.crm.util
 
+import groovy.transform.CompileStatic
+
 /**
  * A simple directed graph.
  */
+@CompileStatic
 class Graph {
-    List<Vertex> vertexes = []
-    List<Edge> edges = []
+    private final List<Vertex> vertexes = []
+    private final List<Edge> edges = []
 
-    Vertex getVertex(Object arg) {
-        vertexes.find { it.obj == arg }
+    Vertex getVertex(final Object arg) {
+        vertexes.find { Vertex v -> v.obj == arg }
     }
 
-    Vertex addVertex(Object arg) {
-        def v = getVertex(arg)
+    Vertex addVertex(final Object arg) {
+        Vertex v = getVertex(arg)
         if (!v) {
             v = new Vertex(arg)
             vertexes << v
@@ -37,9 +40,9 @@ class Graph {
     }
 
     Edge addEdge(Object from, Object to) {
-        def v1 = getVertex(from) ?: addVertex(from)
-        def v2 = getVertex(to) ?: addVertex(to)
-        def edge = edges.find { it.source == v1 && it.target == v2 }
+        final Vertex v1 = getVertex(from) ?: addVertex(from)
+        final Vertex v2 = getVertex(to) ?: addVertex(to)
+        Edge edge = edges.find { Edge e -> e.source == v1 && e.target == v2 }
         if (!edge) {
             edge = new Edge(v1, v2)
             edges << edge
@@ -48,9 +51,9 @@ class Graph {
     }
 
     Edge addEdge(Object from, Object to, double weight) {
-        def v1 = getVertex(from) ?: addVertex(from)
-        def v2 = getVertex(to) ?: addVertex(to)
-        def edge = edges.find { it.source == v1 && it.target == v2 }
+        final Vertex v1 = getVertex(from) ?: addVertex(from)
+        final Vertex v2 = getVertex(to) ?: addVertex(to)
+        Edge edge = edges.find { Edge e -> e.source == v1 && e.target == v2 }
         if (edge) {
             edge.weight = weight
         } else {
@@ -61,24 +64,26 @@ class Graph {
     }
 
     List<Vertex> getSources(Vertex target) {
-        edges.findAll { it.target == target }.collect { it.source }
+        edges.findAll { Edge e -> e.target == target }.collect { Edge e -> e.source }
     }
 
     List<Vertex> getTargets(Vertex source) {
-        edges.findAll { it.source == source }.collect { it.target }
+        edges.findAll { Edge e -> e.source == source }.collect { Edge e -> e.target }
     }
 
     Iterator<Vertex> iterator() {
-        def result = []
-        def workList = vertexes.clone()
-        def edgeList = edges.clone()
+        final List<Vertex> result = []
+        final List<Vertex> workList = []
+        workList.addAll(vertexes)
+        final List<Edge> edgeList = []
+        edgeList.addAll(edges)
         int i = 0
         while (workList) {
             def leafs = findLeafs(workList, edgeList)
             for (v in leafs) {
                 result << v
                 workList.remove(v)
-                edgeList.removeAll { it.target == v }
+                edgeList.removeAll { Edge e -> e.target == v }
             }
             if (i++ > 50) {
                 throw new RuntimeException("Graph is cyclic or too complex")
@@ -87,23 +92,23 @@ class Graph {
         result.reverse().iterator()
     }
 
-    private List<Vertex> findLeafs(List<Vertex> vList, List<Edge> eList) {
-        vList.findAll { v -> !eList.find { v == it.source } }
+    private List<Vertex> findLeafs(final List<Vertex> vList, final List<Edge> eList) {
+        vList.findAll { Vertex v -> !eList.find { Edge e -> v == e.source } }
     }
 
     String toString() {
-        def orphans = []
+        final List<Vertex> orphans = []
         orphans.addAll(vertexes)
-        def s = []
+        final List<String> s = []
         for (edge in edges) {
             s << edge.toString()
             orphans.remove(edge.source)
             orphans.remove(edge.target)
         }
-        for (v in orphans) {
+        for (Vertex v in orphans) {
             s << v.toString()
         }
-        s.join(', ')
+        return s.join(', ')
     }
 
 }

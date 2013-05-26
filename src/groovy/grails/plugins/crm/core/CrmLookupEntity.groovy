@@ -21,7 +21,7 @@ package grails.plugins.crm.core
  * @since 0.1
  */
 @TenantEntity
-abstract class CrmLookupEntity implements Comparable {
+abstract class CrmLookupEntity {
 
     int orderIndex
     boolean enabled
@@ -76,10 +76,10 @@ abstract class CrmLookupEntity implements Comparable {
 
         CrmLookupEntity that = (CrmLookupEntity) o
 
-        if (id != that.id) return false
-        if (orderIndex != that.orderIndex) return false
-        if (name != that.name) return false
-        if (param != that.param) return false
+        if (this.id != that.id) return false
+        if (this.orderIndex != that.orderIndex) return false
+        if (this.name != that.name) return false
+        if (this.param != that.param) return false
 
         return true
     }
@@ -94,7 +94,13 @@ abstract class CrmLookupEntity implements Comparable {
         return result
     }
 
-    int compareTo(Object o) {
-        orderIndex.compareTo(o.orderIndex)
-    }
+    /**
+     * CrmLookupEntity used to implement Comparable but due to https://jira.codehaus.org/browse/GROOVY-3364
+     * it is not possible. This comparator will make it easier to sort CrmLookupEntity instances by orderIndex.
+     * <code>listOfInstances.sort(CrmLookupEntity.COMPARATOR)</code>
+     * @return
+     */
+    static final Comparator COMPARATOR = {CrmLookupEntity a, CrmLookupEntity b ->
+        a.orderIndex <=> b.orderIndex
+    } as Comparator
 }

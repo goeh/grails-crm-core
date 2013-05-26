@@ -15,7 +15,6 @@
  */
 package grails.plugins.crm.core
 
-import java.security.MessageDigest
 import javax.servlet.http.HttpServletRequest
 import org.codehaus.groovy.grails.web.util.WebUtils
 

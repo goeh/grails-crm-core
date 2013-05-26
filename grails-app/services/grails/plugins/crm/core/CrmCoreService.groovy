@@ -18,6 +18,7 @@ package grails.plugins.crm.core
 import grails.util.GrailsNameUtils
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
@@ -51,7 +52,7 @@ class CrmCoreService {
      * @param tenant tenant to check in or null/omitted for current tenant
      * @return
      */
-    boolean hasFeature(String feature, String role = null, Long tenant = null) {
+    boolean hasFeature(final String feature, final String role = null, final Long tenant = null) {
         if (crmFeatureService != null) {
             return crmFeatureService.hasFeature(feature, role, tenant)
         }
@@ -64,7 +65,7 @@ class CrmCoreService {
      * @param feature name of feature
      * @return Map with feature properties
      */
-    Map getFeature(String feature) {
+    Map getFeature(final String feature) {
         if (crmFeatureService != null) {
             return crmFeatureService.getFeature(feature)
         }
@@ -77,11 +78,11 @@ class CrmCoreService {
      * @param reference the string to analyze
      * @return true if the string matches the format "domainClass@id" and domainClass is a valid domain class.
      */
-    boolean isDomainReference(String reference) {
+    boolean isDomainReference(final String reference) {
         if (!reference) {
             return false
         }
-        def m = DOMAIN_REFERENCE_PATTERN.matcher(reference)
+        final Matcher m = DOMAIN_REFERENCE_PATTERN.matcher(reference)
         m.matches() && grailsApplication.domainClasses.find { it.propertyName == m.group(1) }
     }
 
@@ -100,7 +101,7 @@ class CrmCoreService {
      *
      * @param name full class name of domain or it's property name i.e. "crmContact"
      */
-    Class getDomainClass(String name) {
+    Class getDomainClass(final String name) {
         def domain = grailsApplication.domainClasses.find { it.propertyName == name }
         if (domain) {
             domain = domain.clazz
@@ -136,7 +137,7 @@ class CrmCoreService {
      * @param identifier reference identifier (i.e. "domainClass@id")
      * @return the domain instance or null if not found
      */
-    def getReference(String identifier) {
+    def getReference(final String identifier) {
         if (identifier) {
             def (name, key) = identifier.split('@').toList()
             if (name && key) {

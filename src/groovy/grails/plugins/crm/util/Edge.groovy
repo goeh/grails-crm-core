@@ -16,17 +16,23 @@
 
 package grails.plugins.crm.util
 
+import groovy.transform.CompileStatic
+
 /**
  * A simple edge.
  */
+@CompileStatic
 class Edge {
-    Vertex source
-    Vertex target
-    Double weight
+    private final Vertex source
+    private final Vertex target
+    Double weight // Weight is mutable but source and target are not
+
+    private Edge() {}
 
     Edge(Vertex source, Vertex target) {
         this.source = source
         this.target = target
+        this.weight = 0
     }
 
     Edge(Vertex source, Vertex target, double weight) {
@@ -35,8 +41,16 @@ class Edge {
         this.weight = weight
     }
 
+    Vertex getSource() {
+        source
+    }
+
+    Vertex getTarget() {
+        target
+    }
+
     String toString() {
-        source.toString() + (weight != null ? '-(' + weight + ')->' : '->') + target.toString()
+        source.toString() + '-(' + weight + ')->' + target.toString()
     }
 
     boolean equals(o) {
@@ -56,7 +70,7 @@ class Edge {
         int result
         result = (source != null ? source.hashCode() : 0)
         result = 31 * result + (target != null ? target.hashCode() : 0)
-        result = 31 * result + (weight != null ? weight.hashCode() : 0)
+        result = 31 * result + weight.intValue()
         return result
     }
 }
