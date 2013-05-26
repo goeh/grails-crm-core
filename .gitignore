@@ -1,12 +1,20 @@
-# Ignore Intellij IDEA files
-.idea
-*.iml
-
-# Ignore build artifacts
-target
-
-# Ignore packaged plugins
-*.zip
-
+*.iws
+*Db.properties
+*Db.script
+.settings
 stacktrace.log
-plugin.xml
+/.idea
+/build
+/.gradle
+/*.zip
+/plugin.xml
+/*.log
+/*DB.*
+/cobertura.ser
+.DS_Store
+/target/
+/out/
+/web-app/plugins
+/web-app/WEB-INF/classes
+/.link_to_grails_plugins/
+/target-eclipse/
