@@ -4,6 +4,7 @@
 .settings
 stacktrace.log
 /.idea
+/*.iml
 /build
 /.gradle
 /*.zip

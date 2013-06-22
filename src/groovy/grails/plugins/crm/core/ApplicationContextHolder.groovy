@@ -16,8 +16,6 @@
 
 package grails.plugins.crm.core
 
-import groovy.transform.CompileStatic
-
 import javax.servlet.ServletContext
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -38,7 +36,7 @@ import org.springframework.context.ApplicationContextAware
  * @author Burt Beckwith
  */
 @Singleton
-@CompileStatic
+//@CompileStatic
 class ApplicationContextHolder implements ApplicationContextAware {
 
     private ApplicationContext ctx

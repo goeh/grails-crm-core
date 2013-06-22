@@ -16,12 +16,10 @@
 
 package grails.plugins.crm.util
 
-import groovy.transform.CompileStatic
-
 /**
  * A simple vertex.
  */
-@CompileStatic
+//@CompileStatic
 final class Vertex {
     private final Object obj
 

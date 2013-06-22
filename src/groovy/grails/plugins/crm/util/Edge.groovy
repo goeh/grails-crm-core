@@ -16,12 +16,10 @@
 
 package grails.plugins.crm.util
 
-import groovy.transform.CompileStatic
-
 /**
  * A simple edge.
  */
-@CompileStatic
+//@CompileStatic
 class Edge {
     private final Vertex source
     private final Vertex target
