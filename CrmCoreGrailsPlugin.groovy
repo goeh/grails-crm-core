@@ -22,7 +22,7 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.1.0"
+    def version = "1.1.1"
     def grailsVersion = "2.0 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
@@ -48,6 +48,7 @@ Grails CRM Core Functionality.
         applicationContextHolder(ApplicationContextHolder) { bean ->
             bean.factoryMethod = 'getInstance'
         }
+        crmTenantResolver(grails.plugins.crm.core.DefaultTenantResolver)
         currentTenant(grails.plugins.crm.core.CurrentTenantThreadLocal)
     }
 
@@ -62,4 +63,9 @@ Grails CRM Core Functionality.
         }
     }
 
+    // TODO Is this really working, does it affect order of CrmTenantFilters???
+    def getWebXmlFilterOrder() {
+        def FilterManager = getClass().getClassLoader().loadClass('grails.plugin.webxml.FilterManager')
+        [CrmTenantFilters: FilterManager.GRAILS_WEB_REQUEST_POSITION + 10]
+    }
 }

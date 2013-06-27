@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import grails.plugins.crm.core.TenantUtils
+package grails.plugins.crm.core
 
 import javax.servlet.http.HttpServletResponse
 
 /**
- * Allow clients to specify tenant in request URL.
- * A check is made to ensure that the authenticated user has access to the given tenant.
+ * Resolve tenant ID for the current request.
+ * Resolving is delegated to the 'crmTenantResolver' bean.
+ * A check is made to ensure that the authenticated user has access to the resolved tenant.
  *
  * @author Goran Ehrsson
  * @since 0.1
@@ -28,13 +29,16 @@ import javax.servlet.http.HttpServletResponse
 class CrmTenantFilters {
 
     def crmSecurityService
+    def grailsApplication
+
+    CrmTenantResolver crmTenantResolver
 
     def filters = {
         tenantCheck(uri: '/**') {
             before = {
-                def tenant = params.long('tenant')
-                if(session) {
-                    if(tenant && crmSecurityService.isAuthenticated()) {
+                Long tenant = crmTenantResolver.resolve(request, params)
+                if (session) {
+                    if (tenant && crmSecurityService.isAuthenticated()) {
                         if (crmSecurityService.isValidTenant(tenant)) {
                             session.tenant = tenant
                         } else {
@@ -44,6 +48,9 @@ class CrmTenantFilters {
                     } else {
                         tenant = session.tenant
                     }
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("${tenant ?: 0L}")
                 }
                 TenantUtils.setTenant(tenant ?: 0L)
             }
