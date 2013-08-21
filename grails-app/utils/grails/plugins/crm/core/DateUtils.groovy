@@ -56,10 +56,10 @@ abstract class DateUtils {
 
     static String formatDate(String input, TimeZone tz = UTC) {
         def rval = ''
-        if(input) {
+        if (input) {
             try {
                 rval = formatDate(parseDate(input, tz), tz)
-            } catch(ParseException e) {
+            } catch (ParseException e) {
                 rval = "${input}!"
             }
         }
@@ -68,24 +68,24 @@ abstract class DateUtils {
 
     static Date parseDate(String input, TimeZone tz = UTC) {
         Date date = null
-        if(input) {
+        if (input) {
             input = input.replace(' ', ''); // Remove all spaces.
             Exception firstError = null
-            DATE_FORMATS.each{fmt->
-                if(date == null) {
+            DATE_FORMATS.each { fmt ->
+                if (date == null) {
                     try {
                         DateFormat df = new SimpleDateFormat(fmt, SWEDISH)
                         df.timeZone = tz
                         df.setLenient(false)
                         date = df.parse(input)
-                    } catch(ParseException e) {
-                        if(! firstError) {
+                    } catch (ParseException e) {
+                        if (!firstError) {
                             firstError = e
                         }
                     }
                 }
             }
-            if(date == null) {
+            if (date == null) {
                 throw firstError
             }
         }
@@ -100,10 +100,10 @@ abstract class DateUtils {
 
     static String formatDateTime(String input, TimeZone tz = UTC) {
         def rval = ''
-        if(input) {
+        if (input) {
             try {
                 rval = formatDateTime(parseDateTime(input, tz), tz)
-            } catch(ParseException e) {
+            } catch (ParseException e) {
                 rval = "${input}!"
             }
         }
@@ -112,24 +112,24 @@ abstract class DateUtils {
 
     static Date parseDateTime(String input, TimeZone tz = UTC) {
         Date date = null
-        if(input) {
+        if (input) {
             input = input.replace(' ', ''); // Remove all spaces.
             Exception firstError = null
-            DATETIME_FORMATS.each{fmt->
-                if(date == null) {
+            DATETIME_FORMATS.each { fmt ->
+                if (date == null) {
                     try {
                         DateFormat df = new SimpleDateFormat(fmt, SWEDISH)
                         df.timeZone = tz
                         df.setLenient(false)
                         date = df.parse(input)
-                    } catch(ParseException e) {
-                        if(! firstError) {
+                    } catch (ParseException e) {
+                        if (!firstError) {
                             firstError = e
                         }
                     }
                 }
             }
-            if(date == null) {
+            if (date == null) {
                 throw firstError
             }
         }
@@ -138,8 +138,8 @@ abstract class DateUtils {
 
     static Date duration(Date dateFrom, Date dateTo) {
         def d = null
-        if(dateFrom && dateTo) {
-            use( groovy.time.TimeCategory ){
+        if (dateFrom && dateTo) {
+            use(groovy.time.TimeCategory) {
                 d = (dateTo - dateFrom).toMilliseconds()
             }
         }
@@ -150,31 +150,31 @@ abstract class DateUtils {
         formatDuration(duration(dateFrom, dateTo), includeSeconds)
     }
 
-    static String formatDuration(Date date, boolean includeSeconds = false){
+    static String formatDuration(Date date, boolean includeSeconds = false) {
         StringBuilder buf = new StringBuilder()
-        if(date != null) {
+        if (date != null) {
             def y = date.year - 70
             def d = format(date, "D")
             def h = format(date, "H")
             def m = format(date, "m")
             def s = format(date, "s")
-            if(d != '1') {
-                buf << "${Integer.parseInt(d) - 1 + (365*y)} dygn"
+            if (d != '1') {
+                buf << "${Integer.parseInt(d) - 1 + (365 * y)} dygn"
             }
-            if(h != '0') {
-                if(buf.length() > 0) {
+            if (h != '0') {
+                if (buf.length() > 0) {
                     buf << ' '
                 }
                 buf << "${h} tim"
             }
-            if(m != '0') {
-                if(buf.length() > 0) {
+            if (m != '0') {
+                if (buf.length() > 0) {
                     buf << ' '
                 }
                 buf << "${m} min"
             }
-            if(includeSeconds && (s != '0')) {
-                if(buf.length() > 0) {
+            if (includeSeconds && (s != '0')) {
+                if (buf.length() > 0) {
                     buf << ' '
                 }
                 buf << "${s} sek"
@@ -184,14 +184,14 @@ abstract class DateUtils {
     }
 
     static BigDecimal getExcelDuration(Date date) {
-        if(date == null) {
+        if (date == null) {
             return null
         }
         def y = date.year - 70
         def d = format(date, "D")
         def h = format(date, "H")
         def m = format(date, "m")
-        def days = d == '1' ? 0 : Integer.valueOf(d) - 1 + (365*y)
+        def days = d == '1' ? 0 : Integer.valueOf(d) - 1 + (365 * y)
         def hours = Integer.valueOf(h) / 24 + Integer.valueOf(m) / 1440
         return days + hours
     }
@@ -201,7 +201,7 @@ abstract class DateUtils {
         try {
             Date date = parseDuration(input)
             rval = date ? formatDuration(date) : ''
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println(e.message)
             rval = "${input}!"
         }
@@ -210,49 +210,77 @@ abstract class DateUtils {
 
     static Date parseDuration(String input) {
         Date rval = null
-        if(input != null) {
+        if (input != null) {
             input = input.trim()
-            if(input.length() == 0 || input == '0') {
+            if (input.length() == 0 || input == '0') {
                 return rval
             }
             def arr = [0, 0, 0]
             def rx = /(\d+)\s*([ydthm])/
             def m = input =~ rx
             def found = false
-            while(m.find()) {
+            while (m.find()) {
                 def match = m.group(2)
-                if(match == 'd') {
+                if (match == 'd') {
                     arr[0] += Integer.valueOf(m.group(1))
                     found = true
-                } else if(match == 't' || m.group(2) == 'h') {
+                } else if (match == 't' || m.group(2) == 'h') {
                     arr[1] = Integer.valueOf(m.group(1))
                     found = true
-                } else if(match == 'm') {
+                } else if (match == 'm') {
                     arr[2] = Integer.valueOf(m.group(1))
                     found = true
-                } else if(match == 'y') {
+                } else if (match == 'y') {
                     arr[0] += (Integer.valueOf(m.group(1)) * 365)
                     found = true
                 }
             }
-            if(! found) {
-                arr = input.split(/\D+/).collect{Integer.valueOf(it)}
-                while(arr.size() < 3) {
+            if (!found) {
+                arr = input.split(/\D+/).collect { Integer.valueOf(it) }
+                while (arr.size() < 3) {
                     arr.add(0, 0)
                 }
             }
             def y = 0
-            if(arr[0] > 364) {
+            if (arr[0] > 364) {
                 y = (arr[0] / 365).intValue()
                 arr[0] = arr[0] % 365
             }
-            if((arr[0] + arr[1] + arr[2]) > 0) {
-                use( groovy.time.TimeCategory ){
-                    rval = new Date(new Duration(arr[0], arr[1], arr[2], 0, 0 ).toMilliseconds())
+            if ((arr[0] + arr[1] + arr[2]) > 0) {
+                use(groovy.time.TimeCategory) {
+                    rval = new Date(new Duration(arr[0], arr[1], arr[2], 0, 0).toMilliseconds())
                 }
             }
         }
         return rval
+    }
+
+    static String formatDuration(Duration d, Locale locale = null, boolean includeSeconds = false) {
+        final StringBuilder s = new StringBuilder()
+        if (d != null) {
+            if (locale == null) {
+                locale = SWEDISH
+            }
+            if (d.hours) {
+                s << d.hours.intValue().toString()
+                s << 't'
+            }
+            if (d.minutes) {
+                if (s.length()) {
+                    s << ' '
+                }
+                s << d.minutes.intValue().toString()
+                s << 'm'
+            }
+            if (includeSeconds && d.seconds) {
+                if (s.length()) {
+                    s << ' '
+                }
+                s << d.seconds.intValue().toString()
+                s << 's'
+            }
+        }
+        s.toString()
     }
 
     static def getDateSpan(date) {
@@ -271,7 +299,7 @@ abstract class DateUtils {
     }
 
     static boolean isBefore(date1, date2) {
-        if(! date1) {
+        if (!date1) {
             return false
         }
         return date2 && date1.before(date2)
@@ -281,10 +309,10 @@ abstract class DateUtils {
         def cal = Calendar.getInstance()
         cal.setTime(date)
         def firstDayOfWeek = cal.getFirstDayOfWeek()
-        if(dayOffset != 0) {
+        if (dayOffset != 0) {
             cal.add(Calendar.DAY_OF_MONTH, dayOffset)
         }
-        while(cal.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek ) {
+        while (cal.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek) {
             cal.add(Calendar.DAY_OF_MONTH, -1)
         }
         cal.set(Calendar.HOUR_OF_DAY, 0)
@@ -298,14 +326,14 @@ abstract class DateUtils {
         def cal = Calendar.getInstance()
         cal.setTime(date)
         def firstDayOfWeek = cal.getFirstDayOfWeek()
-        if(dayOffset != 0) {
+        if (dayOffset != 0) {
             cal.add(Calendar.DAY_OF_MONTH, dayOffset)
         }
-        if(cal.get(Calendar.DAY_OF_WEEK) == firstDayOfWeek) {
+        if (cal.get(Calendar.DAY_OF_WEEK) == firstDayOfWeek) {
             // If today is first day of week, start our search algorithm tomorrow.
             cal.add(Calendar.DAY_OF_MONTH, 1)
         }
-        while(cal.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek) {
+        while (cal.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek) {
             cal.add(Calendar.DAY_OF_MONTH, 1)
         }
         cal.add(Calendar.DAY_OF_MONTH, -1) // Day before first day of week
