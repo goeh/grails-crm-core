@@ -16,6 +16,8 @@
 
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
+
 import javax.servlet.ServletContext
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -36,47 +38,53 @@ import org.springframework.context.ApplicationContextAware
  * @author Burt Beckwith
  */
 @Singleton
-//@CompileStatic
 class ApplicationContextHolder implements ApplicationContextAware {
 
     private ApplicationContext ctx
 
     private static final Map<String, Object> TEST_BEANS = [:]
 
-    void setApplicationContext(ApplicationContext applicationContext) {
+    @CompileStatic
+    void setApplicationContext(final ApplicationContext applicationContext) {
         ctx = applicationContext
     }
 
+    @CompileStatic
     static ApplicationContext getApplicationContext() {
         getInstance().ctx
     }
 
-    static Object getBean(String name) {
+    // TODO Adding @CompileStatic to this method breaks ApplicationContext#getBean(String)
+    static Object getBean(final String name) {
         TEST_BEANS[name] ?: getApplicationContext().getBean(name)
     }
 
+    @CompileStatic
     static GrailsApplication getGrailsApplication() {
-        def app = getBean('grailsApplication')
+        final Object app = getBean('grailsApplication')
         if (app instanceof GrailsApplication) {
             return (GrailsApplication)app
         }
         throw new IllegalStateException("Illegal type for bean 'grailsApplication': ${app.class.name}")
     }
 
+    @CompileStatic
     static ConfigObject getConfig() {
         getGrailsApplication().config
     }
 
+    @CompileStatic
     static ServletContext getServletContext() {
-        def ctx = getBean('servletContext')
+        final Object ctx = getBean('servletContext')
         if (ctx instanceof ServletContext) {
             return (ServletContext)ctx
         }
         throw new IllegalStateException("Illegal type for bean 'servletContext': ${ctx.class.name}")
     }
 
+    @CompileStatic
     static GrailsPluginManager getPluginManager() {
-        def mgr = getBean('pluginManager')
+        final Object mgr = getBean('pluginManager')
         if (mgr instanceof GrailsPluginManager) {
             return (GrailsPluginManager)mgr
         }
@@ -84,11 +92,13 @@ class ApplicationContextHolder implements ApplicationContextAware {
     }
 
     // For testing
-    static void registerTestBean(String name, bean) {
+    @CompileStatic
+    static void registerTestBean(final String name, final Object bean) {
         TEST_BEANS[name] = bean
     }
 
     // For testing
+    @CompileStatic
     static void unregisterTestBeans() {
         TEST_BEANS.clear()
     }

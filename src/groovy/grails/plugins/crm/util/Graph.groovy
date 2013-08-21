@@ -16,10 +16,12 @@
 
 package grails.plugins.crm.util
 
+import groovy.transform.CompileStatic
+
 /**
  * A simple directed graph.
  */
-//@CompileStatic
+@CompileStatic
 class Graph {
     private final List<Vertex> vertexes = []
     private final List<Edge> edges = []
