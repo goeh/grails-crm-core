@@ -49,17 +49,23 @@ class WebUtils {
         response.setDateHeader("Expires", cal.getTimeInMillis())
     }
 
+    static void defaultCache(HttpServletResponse response) {
+        response.setHeader("Pragma", "")
+        response.setHeader("Cache-Control", "public,max-age=600")
+        Calendar cal = Calendar.getInstance()
+        cal.add(Calendar.MINUTE, 10)
+        response.setDateHeader("Expires", cal.getTimeInMillis())
+    }
+
     static void attachmentHeaders(HttpServletResponse response, String mimetype, String filename) {
         response.setHeader("Content-disposition", "attachment; filename=${filename}")
         response.contentType = mimetype
-        //response.characterEncoding = "ISO-8859-1"
         shortCache(response)
     }
 
     static void inlineHeaders(HttpServletResponse response, String mimetype, String filename) {
         response.setHeader("Content-disposition", "inline; filename=${filename}")
         response.contentType = mimetype
-        //response.characterEncoding = "ISO-8859-1"
         shortCache(response)
     }
 
