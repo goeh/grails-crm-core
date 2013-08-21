@@ -22,8 +22,8 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.1.1"
-    def grailsVersion = "2.0 > *"
+    def version = "1.2.0"
+    def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
     def pluginExcludes = [
@@ -55,8 +55,10 @@ Grails CRM Core Functionality.
     def doWithApplicationContext = { applicationContext ->
         if (applicationContext.containsBean("gormSelection")) {
             // TODO Hack warning: soft reference to selection plugin
-            applicationContext.getBean("gormSelection").fixedCriteria = {query, params ->
-                eq('tenantId', TenantUtils.tenant)
+            applicationContext.getBean("gormSelection").fixedCriteria = { query, params ->
+                if (targetClass.metaClass.respondsTo(null, 'getTenantId')) {
+                    eq('tenantId', TenantUtils.tenant)
+                }
             }
         } else {
             log.warn("selection plugin not installed")
