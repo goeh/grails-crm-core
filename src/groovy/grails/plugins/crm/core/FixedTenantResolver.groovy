@@ -41,6 +41,10 @@ class FixedTenantResolver implements CrmTenantResolver {
         if (fixedTenant == null) {
             fixedTenant = grailsApplication.config.crm.tenant.fixed ?: 0L
         }
+        // We trust fixed tenants, therefore it's ok to assign it to the session.
+        if(request.session) {
+            request.session.tenant = fixedTenant
+        }
         fixedTenant
     }
 }
