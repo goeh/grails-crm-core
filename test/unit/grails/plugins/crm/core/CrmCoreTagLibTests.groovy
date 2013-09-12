@@ -37,9 +37,4 @@ class CrmCoreTagLibTests {
         name == 'hibernate'
     }
 
-    void testDecorate() {
-        def taglib = applicationContext.getBean(CrmCoreTagLib)
-        assert applyTemplate('<crm:decorate max="20">The quick brown fox jumps over the lazy dog.</crm:decorate>') == "The quick brown f..."
-        assert applyTemplate('<crm:decorate><script>alert("buuuh!")</script></crm:decorate>') == '&lt;script&gt;alert(&quot;buuuh!&quot;)&lt;/script&gt;'
-    }
 }

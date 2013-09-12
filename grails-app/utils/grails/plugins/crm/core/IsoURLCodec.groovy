@@ -16,6 +16,8 @@
 
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
+
 /**
  * Convert URL using ISO-8859-1 encoding.
  *
@@ -24,6 +26,7 @@ package grails.plugins.crm.core
  * Credits to Vivek Krishna for the blog post:
  *   http://www.intelligrape.com/blog/2011/04/11/iso-8859-based-url-encoding-in-grails/
  */
+@CompileStatic
 class IsoURLCodec {
     static encode = { obj ->
         URLEncoder.encode(obj.toString(), "ISO-8859-1")

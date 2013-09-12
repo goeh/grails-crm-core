@@ -46,16 +46,6 @@ class CrmCoreTagLib {
         out << WebUtils.bytesFormatted(b)
     }
 
-    def decorate = { attrs, body ->
-        def result = WebUtils.decorateText(body().toString().trim(), attrs.max ? Integer.valueOf(attrs.max) : 0)
-        if (attrs.encode) {
-            result = result."encodeAs${attrs.encode}"()
-        } else {
-            result = result.encodeAsHTML()
-        }
-        out << result
-    }
-
     /**
      * Render block of markup with a domain instance as model.
      * If the domain instance cannot be found, nothing is rendered.

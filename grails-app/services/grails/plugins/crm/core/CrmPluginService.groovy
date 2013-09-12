@@ -15,6 +15,8 @@
  */
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
+
 /**
  *
  * @author Goran Ehrsson
@@ -24,7 +26,7 @@ class CrmPluginService {
 
     static transactional = false
 
-    private final Map registrations = [:]
+    private final Map<String, List> registrations = [:]
 
     def pluginManager
 
@@ -45,10 +47,10 @@ exclude {
   }
 }
 */
-
-    def registerView(controller, action, location, params) {
-        def key = controller + '.' + action + '.' + location
-        def list = registrations[key]
+    @CompileStatic
+    void registerView(final String controller, final String action, final String location, final Map params) {
+        final String key = controller + '.' + action + '.' + location
+        List list = registrations[key]
         if (list == null) {
             list = registrations[key] = []
         }
@@ -57,17 +59,18 @@ exclude {
         list << params
     }
 
-    def hasView(controller, action, location, matchParams = null) {
-        def key = controller + '.' + action + '.' + location
-        def list = registrations[key]
+    @CompileStatic
+    boolean hasView(final String controller, final String action, final String location, Map matchParams = null) {
+        final String key = controller + '.' + action + '.' + location
+        final List<Map> list = registrations[key]
         if (!list) {
             return false
         }
         if (matchParams) {
-            def itor = list.iterator()
+            Iterator<Map> itor = list.iterator()
             while (itor.hasNext()) {
-                def map = itor.next()
-                def rval = true
+                Map map = itor.next()
+                boolean rval = true
                 matchParams.each {k, v ->
                     if (map[k] != v) {
                         rval = false
@@ -82,14 +85,15 @@ exclude {
         return true
     }
 
-    def removeView(controller, action, location, matchParams = null) {
-        def key = controller + '.' + action + '.' + location
-        def list = registrations[key]
+    @CompileStatic
+    void removeView(final String controller, final String action, final String location, Map matchParams = null) {
+        final String key = controller + '.' + action + '.' + location
+        final List<Map> list = registrations[key]
         if (list) {
-            def itor = list.iterator()
+            Iterator<Map> itor = list.iterator()
             while (itor.hasNext()) {
-                def map = itor.next()
-                def rval = true
+                Map map = itor.next()
+                boolean rval = true
                 if (matchParams) {
                     matchParams.each {k, v ->
                         if (map[k] != v) {
@@ -107,8 +111,9 @@ exclude {
         }
     }
 
-    List getViews(controller, action, location) {
-        def list = getRegistrations(controller + '.' + action + '.' + location)
+    @CompileStatic
+    List getViews(final String controller, final String action, final String location) {
+        final List<Map> list = getRegistrations(controller + '.' + action + '.' + location)
         if (action != '*') {
             list.addAll(getRegistrations(controller + '.*.' + location))
         }
@@ -121,12 +126,13 @@ exclude {
         return list
     }
 
-    private List getRegistrations(String key) {
-        def list = registrations[key]
+    @CompileStatic
+    private List<Map> getRegistrations(final String key) {
+        final List<Map> list = registrations[key]
         if (list == null) {
             list = []
         } else {
-            def copy = []
+            final List<Map> copy = []
             copy.addAll(list)
             list = copy
         }

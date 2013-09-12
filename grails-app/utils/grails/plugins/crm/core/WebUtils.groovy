@@ -15,10 +15,12 @@
  */
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
+
+import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 import java.text.SimpleDateFormat
-import org.apache.commons.lang.StringUtils
 import javax.servlet.http.HttpServletRequest
 import org.codehaus.groovy.grails.web.util.WebUtils as GWU
 
@@ -27,7 +29,8 @@ import org.codehaus.groovy.grails.web.util.WebUtils as GWU
  * @author Goran Ehrsson
  * @since 0.1
  */
-class WebUtils {
+@CompileStatic
+final class WebUtils {
     private WebUtils() {}
 
     static void noCache(HttpServletResponse response) {
@@ -41,7 +44,7 @@ class WebUtils {
      * we override Tomcat's default behavior here.
      */
 
-    static void shortCache(HttpServletResponse response) {
+    static void shortCache(final HttpServletResponse response) {
         response.setHeader("Pragma", "")
         response.setHeader("Cache-Control", "private,no-store,max-age=60")
         Calendar cal = Calendar.getInstance()
@@ -49,7 +52,7 @@ class WebUtils {
         response.setDateHeader("Expires", cal.getTimeInMillis())
     }
 
-    static void defaultCache(HttpServletResponse response) {
+    static void defaultCache(final HttpServletResponse response) {
         response.setHeader("Pragma", "")
         response.setHeader("Cache-Control", "public,max-age=600")
         Calendar cal = Calendar.getInstance()
@@ -57,19 +60,19 @@ class WebUtils {
         response.setDateHeader("Expires", cal.getTimeInMillis())
     }
 
-    static void attachmentHeaders(HttpServletResponse response, String mimetype, String filename) {
+    static void attachmentHeaders(final HttpServletResponse response, final String mimetype, final String filename) {
         response.setHeader("Content-disposition", "attachment; filename=${filename}")
         response.contentType = mimetype
         shortCache(response)
     }
 
-    static void inlineHeaders(HttpServletResponse response, String mimetype, String filename) {
+    static void inlineHeaders(HttpServletResponse response, final String mimetype, final String filename) {
         response.setHeader("Content-disposition", "inline; filename=${filename}")
         response.contentType = mimetype
         shortCache(response)
     }
 
-    static void renderFile(def response, File file, String encoding = 'UTF-8') {
+    static void renderFile(final HttpServletResponse response, final File file, String encoding = 'UTF-8') {
         response.setContentLength(file.length().intValue())
         response.setCharacterEncoding(encoding)
         file.withInputStream {is ->
@@ -79,14 +82,17 @@ class WebUtils {
         }
     }
 
-    static void withResponseWriter(response, encoding, closure = null) {
-        if (closure == null && encoding instanceof Closure) {
-            closure = encoding
+    static void withResponseWriter(final HttpServletResponse response, Object encodingOrClosure, Closure closure = null) {
+        String encoding
+        if (closure == null && encodingOrClosure instanceof Closure) {
+            closure = (Closure)encodingOrClosure
             encoding = 'UTF-8'
+        } else {
+            encoding = encodingOrClosure.toString()
         }
         def tempFile = File.createTempFile('response', '.tmp')
         tempFile.deleteOnExit()
-        def outs = new OutputStreamWriter(new FileOutputStream(tempFile), encoding)
+        Writer outs = new OutputStreamWriter(new FileOutputStream(tempFile), encoding)
         try {
             closure.call(outs)
             outs.flush()
@@ -114,27 +120,13 @@ class WebUtils {
      * @param b number of bytes
      * @return human friendly representation (kB, MB)
      */
-    static String bytesFormatted(Number b) {
+    static String bytesFormatted(final Number b) {
         if (b < 1024) {
             return b.toString() + ' B'
         } else if (b > (1024 * 10000)) {
             return "${(b / 1024000 + 0.512).intValue()} MB"
         }
         return "${(b / 1024 + 0.512).intValue()} kB"
-    }
-
-    static String decorateText(String text, int maxLen = 0) {
-        if (text == null) {
-            return ''
-        }
-        if (maxLen > 0 && text.length() > maxLen) {
-            text = StringUtils.abbreviate(text, maxLen)
-        }
-        def decorators = [] // TODO How to add decorators? Grails artifacts!? Answer decorator plugin!!!
-        for (d in decorators) {
-            text = d.decorateText(text)
-        }
-        return text.replace('\n', '<br/>\n')
     }
 
     /**
@@ -146,7 +138,7 @@ class WebUtils {
      * @return true if the cookie was present before deleting it, false if it was not present
      */
     static boolean deleteCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
-        def cookie = request.cookies.find {it.name == cookieName}
+        final Cookie cookie = request.cookies.find {Cookie c-> c.name == cookieName}
         if (cookie) {
             cookie.maxAge = 0
             cookie.value = ''
@@ -183,7 +175,7 @@ class WebUtils {
             tenant = TenantUtils.tenant
         }
         HttpSession session = request.getSession(true)
-        Map<Long, Map<String, Serializable>> tenants = session.TENANTS
+        Map<Long, Map<String, Serializable>> tenants = (Map<Long, Map<String, Serializable>>)session.getAttribute('TENANTS')
         if (!tenants) {
             return null
         }
@@ -203,9 +195,10 @@ class WebUtils {
             tenant = TenantUtils.tenant
         }
         HttpSession session = request.getSession(true)
-        Map<Long, Map<String, Serializable>> tenants = session.TENANTS
+        Map<Long, Map<String, Serializable>> tenants = (Map<Long, Map<String, Serializable>>)session.getAttribute('TENANTS')
         if (!tenants) {
-            tenants = session.TENANTS = [:]
+            tenants = [:]
+            session.setAttribute('TENANTS', tenants)
         }
         Map tenantData = tenants[tenant]
         if (tenantData) {

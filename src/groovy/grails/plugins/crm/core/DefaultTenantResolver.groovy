@@ -16,6 +16,7 @@
 
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.servlet.http.HttpServletRequest
@@ -23,10 +24,11 @@ import javax.servlet.http.HttpServletRequest
 /**
  * Resolved tenant from request parameter 'tenant'.
  */
+@CompileStatic
 class DefaultTenantResolver implements CrmTenantResolver {
 
     @Override
-    Long resolve(HttpServletRequest request, GrailsParameterMap params) {
+    Long resolve(final HttpServletRequest request, final GrailsParameterMap params) {
         params.long('_tenant') ?: params.long('tenant')
     }
 }

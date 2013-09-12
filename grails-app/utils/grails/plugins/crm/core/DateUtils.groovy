@@ -15,6 +15,8 @@
  */
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
+
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.text.ParseException
@@ -26,39 +28,44 @@ import groovy.time.Duration
  * @since 0.1
  * @todo refactor this ugly date utility that is hard coded for Swedish locale.
  */
-abstract class DateUtils {
+final class DateUtils {
     private DateUtils() {}
 
-    static DATE_FORMAT = 'yyyy-MM-dd' // Formatting
-    static DATE_FORMATS = ['yyyy-MM-dd', 'yyyyMMdd', 'yyMMdd'] // Parsing
-    static DATETIME_FORMAT = 'yyyy-MM-dd HH:mm' // Formatting
-    static DATETIME_FORMATS = ['yyyy-MM-ddHH:mm', 'yyyyMMddHHmm', 'yyMMddHHmm', 'yyyy-MM-dd', 'yyyyMMdd', 'yyMMdd'] // Parsing
+    static String DATE_FORMAT = 'yyyy-MM-dd' // Formatting
+    static List<String> DATE_FORMATS = ['yyyy-MM-dd', 'yyyyMMdd', 'yyMMdd'] // Parsing
+    static String DATETIME_FORMAT = 'yyyy-MM-dd HH:mm' // Formatting
+    static List<String> DATETIME_FORMATS = ['yyyy-MM-ddHH:mm', 'yyyyMMddHHmm', 'yyMMddHHmm', 'yyyy-MM-dd', 'yyyyMMdd', 'yyMMdd'] // Parsing
 
-    private static final TimeZone UTC = TimeZone.getTimeZone('UTC')
-    private static final Locale SWEDISH = new Locale('sv', 'SE')
+    protected static final TimeZone UTC = TimeZone.getTimeZone('UTC')
+    protected static final Locale SWEDISH = new Locale('sv', 'SE')
 
-    static java.sql.Date parseSqlDate(String input, TimeZone tz = UTC) {
+    @CompileStatic
+    static java.sql.Date parseSqlDate(final String input, TimeZone tz = UTC) {
         Date date = parseDate(input, tz)
         return date != null ? new java.sql.Date(date.clearTime().getTime()) : null
     }
 
-    static String format(Date date, String format, TimeZone tz = UTC) {
-        def fmt = new SimpleDateFormat(format, SWEDISH)
+    @CompileStatic
+    static String format(final Date date, final String format, TimeZone tz = UTC) {
+        final DateFormat fmt = new SimpleDateFormat(format, DateUtils.SWEDISH)
         fmt.timeZone = tz
-        return fmt.format(date)
+        fmt.format(date)
     }
 
-    static String formatDate(Date date, TimeZone tz = UTC) {
-        def fmt = new SimpleDateFormat(DATE_FORMAT, SWEDISH)
+    @CompileStatic
+    static String formatDate(final Date date, TimeZone tz = UTC) {
+        DateFormat fmt = new SimpleDateFormat(DATE_FORMAT, DateUtils.SWEDISH)
         fmt.timeZone = tz
-        return fmt.format(date)
+        fmt.format(date)
     }
 
-    static String formatDate(String input, TimeZone tz = UTC) {
-        def rval = ''
+    @CompileStatic
+    static String formatDate(final String input, TimeZone tz = UTC) {
+        String rval = ''
         if (input) {
             try {
-                rval = formatDate(parseDate(input, tz), tz)
+                final Date d = parseDate(input, tz)
+                rval = formatDate(d, tz)
             } catch (ParseException e) {
                 rval = "${input}!"
             }
@@ -66,15 +73,16 @@ abstract class DateUtils {
         return rval
     }
 
+    @CompileStatic
     static Date parseDate(String input, TimeZone tz = UTC) {
         Date date = null
         if (input) {
             input = input.replace(' ', ''); // Remove all spaces.
             Exception firstError = null
-            DATE_FORMATS.each { fmt ->
+            DATE_FORMATS.each { final String fmt ->
                 if (date == null) {
                     try {
-                        DateFormat df = new SimpleDateFormat(fmt, SWEDISH)
+                        DateFormat df = new SimpleDateFormat(fmt, DateUtils.SWEDISH)
                         df.timeZone = tz
                         df.setLenient(false)
                         date = df.parse(input)
@@ -92,17 +100,20 @@ abstract class DateUtils {
         return date
     }
 
-    static String formatDateTime(Date date, TimeZone tz = UTC) {
-        def fmt = new SimpleDateFormat(DATETIME_FORMAT, SWEDISH)
+    @CompileStatic
+    static String formatDateTime(final Date date, TimeZone tz = UTC) {
+        final DateFormat fmt = new SimpleDateFormat(DATETIME_FORMAT, DateUtils.SWEDISH)
         fmt.timeZone = tz
-        return fmt.format(date)
+        fmt.format(date)
     }
 
-    static String formatDateTime(String input, TimeZone tz = UTC) {
-        def rval = ''
+    @CompileStatic
+    static String formatDateTime(final String input, TimeZone tz = UTC) {
+        String rval = ''
         if (input) {
             try {
-                rval = formatDateTime(parseDateTime(input, tz), tz)
+                final Date d = parseDateTime(input, tz)
+                rval = formatDateTime(d, tz)
             } catch (ParseException e) {
                 rval = "${input}!"
             }
@@ -110,15 +121,16 @@ abstract class DateUtils {
         return rval
     }
 
+    @CompileStatic
     static Date parseDateTime(String input, TimeZone tz = UTC) {
         Date date = null
         if (input) {
             input = input.replace(' ', ''); // Remove all spaces.
             Exception firstError = null
-            DATETIME_FORMATS.each { fmt ->
+            DATETIME_FORMATS.each { String fmt ->
                 if (date == null) {
                     try {
-                        DateFormat df = new SimpleDateFormat(fmt, SWEDISH)
+                        DateFormat df = new SimpleDateFormat(fmt, DateUtils.SWEDISH)
                         df.timeZone = tz
                         df.setLenient(false)
                         date = df.parse(input)
@@ -136,28 +148,32 @@ abstract class DateUtils {
         return date
     }
 
-    static Date duration(Date dateFrom, Date dateTo) {
-        def d = null
+    static Date duration(final Date dateFrom, final Date dateTo) {
+        Date d = null
         if (dateFrom && dateTo) {
             use(groovy.time.TimeCategory) {
-                d = (dateTo - dateFrom).toMilliseconds()
+                Duration dur = (Duration)(dateTo - dateFrom)
+                d = new Date(dur.toMilliseconds())
             }
         }
         return d
     }
 
-    static String formatDuration(Date dateFrom, Date dateTo, boolean includeSeconds = false) {
-        formatDuration(duration(dateFrom, dateTo), includeSeconds)
+    @CompileStatic
+    static String formatDuration(final Date dateFrom, final Date dateTo, boolean includeSeconds = false) {
+        final d = duration(dateFrom, dateTo)
+        formatDuration(d, includeSeconds)
     }
 
-    static String formatDuration(Date date, boolean includeSeconds = false) {
-        StringBuilder buf = new StringBuilder()
+    @CompileStatic
+    static String formatDuration(final Date date, boolean includeSeconds = false) {
+        final StringBuilder buf = new StringBuilder()
         if (date != null) {
-            def y = date.year - 70
-            def d = format(date, "D")
-            def h = format(date, "H")
-            def m = format(date, "m")
-            def s = format(date, "s")
+            int y = date.year - 70
+            String d = format(date, "D")
+            String h = format(date, "H")
+            String m = format(date, "m")
+            String s = format(date, "s")
             if (d != '1') {
                 buf << "${Integer.parseInt(d) - 1 + (365 * y)} dygn"
             }
@@ -165,25 +181,26 @@ abstract class DateUtils {
                 if (buf.length() > 0) {
                     buf << ' '
                 }
-                buf << "${h} tim"
+                buf << "$h tim"
             }
             if (m != '0') {
                 if (buf.length() > 0) {
                     buf << ' '
                 }
-                buf << "${m} min"
+                buf << "$m min"
             }
             if (includeSeconds && (s != '0')) {
                 if (buf.length() > 0) {
                     buf << ' '
                 }
-                buf << "${s} sek"
+                buf << "$s sek"
             }
         }
-        return buf.toString()
+        buf.toString()
     }
 
-    static BigDecimal getExcelDuration(Date date) {
+    @CompileStatic
+    static BigDecimal getExcelDuration(final Date date) {
         if (date == null) {
             return null
         }
@@ -196,7 +213,8 @@ abstract class DateUtils {
         return days + hours
     }
 
-    static String formatDuration(String input) {
+    @CompileStatic
+    static String formatDuration(final String input) {
         String rval
         try {
             Date date = parseDuration(input)
@@ -236,7 +254,7 @@ abstract class DateUtils {
                 }
             }
             if (!found) {
-                arr = input.split(/\D+/).collect { Integer.valueOf(it) }
+                arr = input.split(/\D+/).collect { String part -> Integer.valueOf(part) }
                 while (arr.size() < 3) {
                     arr.add(0, 0)
                 }
@@ -255,11 +273,12 @@ abstract class DateUtils {
         return rval
     }
 
-    static String formatDuration(Duration d, Locale locale = null, boolean includeSeconds = false) {
+    @CompileStatic
+    static String formatDuration(final Duration d, Locale locale = null, boolean includeSeconds = false) {
         final StringBuilder s = new StringBuilder()
         if (d != null) {
             if (locale == null) {
-                locale = SWEDISH
+                locale = DateUtils.SWEDISH // TODO handle i18n
             }
             if (d.hours) {
                 s << d.hours.intValue().toString()
@@ -283,30 +302,32 @@ abstract class DateUtils {
         s.toString()
     }
 
-    static def getDateSpan(date) {
-        def cal = Calendar.getInstance()
+    @CompileStatic
+    static List<Date> getDateSpan(final Date date) {
+        final Calendar cal = Calendar.getInstance()
         cal.setTime(date)
         cal.set(Calendar.HOUR_OF_DAY, 0)
         cal.set(Calendar.MINUTE, 0)
         cal.set(Calendar.SECOND, 0)
         cal.set(Calendar.MILLISECOND, 0)
-        def date1 = cal.getTime()
+        final Date date1 = cal.getTime()
         cal.add(Calendar.DAY_OF_MONTH, 1)
         cal.add(Calendar.SECOND, -1); // TODO This is a test, -1 MILLISECOND works on MySQL but not on MSSQL.
-        def date2 = cal.getTime()
 
-        return [date1, date2]
+        [date1, cal.getTime()]
     }
 
-    static boolean isBefore(date1, date2) {
+    @CompileStatic
+    static boolean isBefore(final Date date1, final Date date2) {
         if (!date1) {
             return false
         }
-        return date2 && date1.before(date2)
+        date2 && date1.before(date2)
     }
 
+    @CompileStatic
     static Date startOfWeek(Integer dayOffset = 0, Date date = new Date()) {
-        def cal = Calendar.getInstance()
+        final Calendar cal = Calendar.getInstance()
         cal.setTime(date)
         def firstDayOfWeek = cal.getFirstDayOfWeek()
         if (dayOffset != 0) {
@@ -322,8 +343,9 @@ abstract class DateUtils {
         return cal.time
     }
 
+    @CompileStatic
     static Date endOfWeek(Integer dayOffset = 0, Date date = new Date()) {
-        def cal = Calendar.getInstance()
+        Calendar cal = Calendar.getInstance()
         cal.setTime(date)
         def firstDayOfWeek = cal.getFirstDayOfWeek()
         if (dayOffset != 0) {

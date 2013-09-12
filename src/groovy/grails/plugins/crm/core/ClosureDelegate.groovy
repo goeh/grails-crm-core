@@ -16,6 +16,7 @@
 
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.ApplicationContext
 
@@ -29,6 +30,7 @@ class ClosureDelegate {
     final Map props
     final Map model
 
+    @CompileStatic
     ClosureDelegate(Object delegate, GrailsApplication app, Map model, Map concreteProps) {
         this.methodDelegate = delegate
         this.props = concreteProps
@@ -43,6 +45,7 @@ class ClosureDelegate {
      * Clients can use both 'application' and 'grailsApplication' to get the same instance.
      * @return the GrailsApplication instance set in the constructor.
      */
+    @CompileStatic
     GrailsApplication getApplication() {
         grailsApplication
     }

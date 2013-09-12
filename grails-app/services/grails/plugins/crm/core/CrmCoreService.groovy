@@ -92,7 +92,7 @@ class CrmCoreService {
      * @param object the object to check
      * @return true if the object is a domain instance
      */
-    boolean isDomainClass(object) {
+    boolean isDomainClass(final Object object) {
         grailsApplication.isDomainClass(GrailsHibernateUtil.unwrapIfProxy(object).getClass())
     }
 
@@ -119,7 +119,7 @@ class CrmCoreService {
      * @param object the domain instance
      * @return reference identifier "domainClass@id"
      */
-    String getReferenceIdentifier(object) {
+    String getReferenceIdentifier(final Object object) {
         def ref
         if (object != null) {
             if (isDomainClass(object)) {

@@ -15,13 +15,13 @@
  */
 package grails.plugins.crm.core
 
-import org.apache.commons.codec.language.Soundex
-import org.apache.commons.codec.language.DoubleMetaphone
+import groovy.transform.CompileStatic
 
 final class SearchUtils {
 
     private SearchUtils() {}
 
+    @CompileStatic
     static String wildcard(String q) {
         q = q.toLowerCase()
         if(q.contains('*')) {
@@ -33,7 +33,7 @@ final class SearchUtils {
         }
     }
 
-    private static Closure dateClosure = {field, criteria ->
+    private static Closure dateClosure = {final String field, final String criteria ->
         if(criteria[0] == '<') {
             lt(field, DateUtils.parseSqlDate(criteria[1..-1]))
         } else if(criteria[0] == '>') {
@@ -50,48 +50,12 @@ final class SearchUtils {
         }
     }
 
-    static void dateCriteria(String dateProperty, String dateCriteria, Object criteriaBuilder) {
-        def closure = dateClosure.clone()
+    @CompileStatic
+    static void dateCriteria(final String dateProperty, final String dateCriteria, Object criteriaBuilder) {
+        Closure closure = (Closure)dateClosure.clone()
         closure.delegate = criteriaBuilder
         closure.resolveStrategy = Closure.DELEGATE_FIRST
         closure.call(dateProperty, dateCriteria)
     }
 
-    static String soundexEncode(String s) {
-        if(! s) {
-            return null
-        }
-        String soundex
-        try {
-            soundex = new Soundex().encode(getNormalizedName(s))
-        } catch(IllegalArgumentException e) {
-            System.err.println("WARNING: Failed to soundex encode '${s}'")
-            soundex = null
-        }
-        return soundex
-    }
-
-    static String doubleMetaphoneEncode(String s) {
-        if(! s) {
-            return null
-        }
-        String result
-        try {
-            result = new DoubleMetaphone().encode(getNormalizedName(s))
-        } catch(IllegalArgumentException e) {
-            System.err.println("WARNING: Failed to double metaphone encode '${s}'")
-            result = null
-        }
-        return result
-    }
-
-    /**
-     * Swedish hack! Remove company name prefix and suffix.
-     * @todo remove method from this class.
-     */
-    static String getNormalizedName(String name) {
-        def rx1 = /^(ab|hb|kb|aktiebolaget)\s+/
-        def rx2 = /(ab|hb|kb|aktiebolag|oy|ltd|inc|llc)\.?$/
-        return name.toLowerCase().replaceAll(rx1, '').replaceAll(rx2, '').trim()
-    }
 }

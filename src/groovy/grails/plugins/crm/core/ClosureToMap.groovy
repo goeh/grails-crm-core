@@ -16,18 +16,22 @@
 
 package grails.plugins.crm.core
 
+import groovy.transform.CompileStatic
+
 /**
  * Utility class to convert Groovy closures to Map.
  */
 class ClosureToMap {
     Map props
 
+    @CompileStatic
     static Map convert(Closure c) {
         def map = [:]
         new ClosureToMap(map, c)
         return map
     }
 
+    @CompileStatic
     ClosureToMap(Map map, Closure c) {
         iterate(map, c)
     }
@@ -45,7 +49,7 @@ class ClosureToMap {
 
         // nested closure, recurse
         if (args[0] in Closure) {
-            def map = props[name] = [:]
+            Map map = props[name] = [:]
             iterate(map, args[0])
         } else {
             props[name] = (args.size() > 1 ? args.toList() : args[0])
