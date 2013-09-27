@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import javax.servlet.http.HttpServletRequest
 import org.codehaus.groovy.grails.web.util.WebUtils as GWU
@@ -34,7 +35,7 @@ final class WebUtils {
     private WebUtils() {}
 
     static void noCache(HttpServletResponse response) {
-        def fmt = new SimpleDateFormat("EEE, d MMM yyyy '12:00:00 GMT'", Locale.US)
+        final DateFormat fmt = new SimpleDateFormat("EEE, d MMM yyyy '12:00:00 GMT'", Locale.US)
         response.setHeader("Cache-Control", "max-age=0,no-cache,no-store,post-check=0,pre-check=0")
         response.setHeader("Expires", fmt.format(new Date() - 1)) // Expired yesterday
     }
@@ -43,11 +44,10 @@ final class WebUtils {
      * caching. This will cause downloads to Internet Explorer to fail. So
      * we override Tomcat's default behavior here.
      */
-
     static void shortCache(final HttpServletResponse response) {
         response.setHeader("Pragma", "")
         response.setHeader("Cache-Control", "private,no-store,max-age=60")
-        Calendar cal = Calendar.getInstance()
+        final Calendar cal = Calendar.getInstance()
         cal.add(Calendar.MINUTE, 2)
         response.setDateHeader("Expires", cal.getTimeInMillis())
     }
@@ -55,7 +55,7 @@ final class WebUtils {
     static void defaultCache(final HttpServletResponse response) {
         response.setHeader("Pragma", "")
         response.setHeader("Cache-Control", "public,max-age=600")
-        Calendar cal = Calendar.getInstance()
+        final Calendar cal = Calendar.getInstance()
         cal.add(Calendar.MINUTE, 10)
         response.setDateHeader("Expires", cal.getTimeInMillis())
     }
@@ -75,8 +75,8 @@ final class WebUtils {
     static void renderFile(final HttpServletResponse response, final File file, String encoding = 'UTF-8') {
         response.setContentLength(file.length().intValue())
         response.setCharacterEncoding(encoding)
-        file.withInputStream {is ->
-            def out = response.outputStream
+        file.withInputStream {InputStream is ->
+            OutputStream out = response.outputStream
             out << is
             out.flush()
         }
@@ -90,7 +90,7 @@ final class WebUtils {
         } else {
             encoding = encodingOrClosure.toString()
         }
-        def tempFile = File.createTempFile('response', '.tmp')
+        final File tempFile = File.createTempFile('response', '.tmp')
         tempFile.deleteOnExit()
         Writer outs = new OutputStreamWriter(new FileOutputStream(tempFile), encoding)
         try {
@@ -174,7 +174,7 @@ final class WebUtils {
         if (tenant == null) {
             tenant = TenantUtils.tenant
         }
-        HttpSession session = request.getSession(true)
+        final HttpSession session = request.getSession(true)
         Map<Long, Map<String, Serializable>> tenants = (Map<Long, Map<String, Serializable>>)session.getAttribute('TENANTS')
         if (!tenants) {
             return null
@@ -194,13 +194,13 @@ final class WebUtils {
         if (tenant == null) {
             tenant = TenantUtils.tenant
         }
-        HttpSession session = request.getSession(true)
-        Map<Long, Map<String, Serializable>> tenants = (Map<Long, Map<String, Serializable>>)session.getAttribute('TENANTS')
+        final HttpSession session = request.getSession(true)
+        final Map<Long, Map<String, Serializable>> tenants = (Map<Long, Map<String, Serializable>>)session.getAttribute('TENANTS')
         if (!tenants) {
             tenants = [:]
             session.setAttribute('TENANTS', tenants)
         }
-        Map tenantData = tenants[tenant]
+        final Map tenantData = tenants[tenant]
         if (tenantData) {
             if (data != null) {
                 tenantData.put(key, data)
