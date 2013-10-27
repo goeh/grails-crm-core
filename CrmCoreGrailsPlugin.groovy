@@ -22,7 +22,7 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.2.3"
+    def version = "1.2.4"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
@@ -32,11 +32,11 @@ class CrmCoreGrailsPlugin {
             "grails-app/services/grails/plugins/crm/core/TestSecurityService.groovy",
             "src/groovy/grails/plugins/crm/core/TestSecurityDelegate.groovy"
     ]
-    def title = "Grails CRM Core Plugin"
+    def title = "GR8 CRM Core Plugin"
     def author = "Goran Ehrsson"
     def authorEmail = "goran@technipelago.se"
     def description = '''\
-Grails CRM Core Functionality.
+GR8 CRM Core Functionality.
 '''
     def documentation = "https://github.com/goeh/grails-crm-core"
     def license = "APACHE"
