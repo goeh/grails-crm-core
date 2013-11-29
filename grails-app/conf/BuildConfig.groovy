@@ -47,12 +47,12 @@ grails.project.dependency.resolution = {
 codenarc {
     reports = {
         CrmXmlReport('xml') {
-            outputFile = 'target/test-reports/CodeNarcReport.xml'
-            title = 'Grails CRM CodeNarc Report'
+            outputFile = 'target/CodeNarcReport.xml'
+            title = 'GR8 CRM CodeNarc Report'
         }
         CrmHtmlReport('html') {
-            outputFile = 'target/test-reports/CodeNarcReport.html'
-            title = 'Grails CRM CodeNarc Report'
+            outputFile = 'target/CodeNarcReport.html'
+            title = 'GR8 CRM CodeNarc Report'
 
         }
     }
