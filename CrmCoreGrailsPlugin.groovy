@@ -18,11 +18,11 @@ import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.ApplicationContextHolder
 
 /**
- * Grails CRM Core Plugin.
+ * GR8 CRM Core Plugin.
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.2.4"
+    def version = "1.2.5"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
