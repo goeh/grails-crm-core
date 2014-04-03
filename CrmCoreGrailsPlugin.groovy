@@ -22,7 +22,7 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.2.5"
+    def version = "1.2.6"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
@@ -50,6 +50,7 @@ GR8 CRM Core Functionality.
         }
         crmTenantResolver(grails.plugins.crm.core.DefaultTenantResolver)
         currentTenant(grails.plugins.crm.core.CurrentTenantThreadLocal)
+        customPropertyEditorRegistrar(grails.plugins.crm.core.CustomPropertyEditorRegistrar)
     }
 
     def doWithApplicationContext = { applicationContext ->
