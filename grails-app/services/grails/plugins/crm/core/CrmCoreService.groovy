@@ -149,5 +149,26 @@ class CrmCoreService {
         }
         return identifier
     }
+
+    /**
+     * Get the reference type for a domain class instance.
+     * A reference type is the "property name" of a domain class.
+     * For example "crmContact" is the reference type for the CrmContact domain.
+     *
+     * @param object the domain instance
+     * @return reference type "domainClass"
+     */
+    String getReferenceType(final Object object) {
+        def ref
+        if (object != null) {
+            if (isDomainClass(object)) {
+                def instance = GrailsHibernateUtil.unwrapIfProxy(object)
+                ref = GrailsNameUtils.getPropertyName(instance.class)
+            } else {
+                ref = GrailsNameUtils.getPropertyName(object)
+            }
+        }
+        return ref
+    }
 }
 

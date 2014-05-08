@@ -60,5 +60,11 @@ class CrmCoreServiceSpec extends grails.plugin.spock.IntegrationSpec {
         crmCoreService.getReferenceIdentifier(null) == null
         crmCoreService.getReference(identifier) == m
         crmCoreService.getReference(null) == null
+        crmCoreService.getReferenceType(m) == 'testLookupEntity'
+        crmCoreService.getReferenceType('testLookupEntity') == 'testLookupEntity'
+        crmCoreService.getReferenceType('TestLookupEntity') == 'testLookupEntity'
+        crmCoreService.getReferenceType(TestLookupEntity.class.name) == 'testLookupEntity'
+        crmCoreService.getReferenceType(TestLookupEntity.class.simpleName) == 'testLookupEntity'
+        crmCoreService.getReferenceType(TestLookupEntity.class) == 'testLookupEntity'
     }
 }
