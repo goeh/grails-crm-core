@@ -14,6 +14,8 @@ public interface CrmContactInformation {
 
     String getFullName();
 
+    String getTitle();
+
     Object getFullAddress();
 
     String getTelephone();

@@ -23,6 +23,7 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
     String firstName
     String lastName
     String companyName
+    String title
     String address
     String telephone
     String email
@@ -32,6 +33,7 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
         firstName(maxSize: 40, nullable: true)
         lastName(maxSize: 40, nullable: true)
         companyName(maxSize: 80, nullable: true)
+        title(maxSize: 80, nullable: true)
         address(maxSize: 100, nullable: true)
         telephone(maxSize: 20, nullable: true)
         email(maxSize: 80, nullable: true, email: true)
@@ -80,7 +82,7 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
     }
 
     transient Map<String, Object> getDao() {
-        ['firstName', 'lastName', 'companyName', 'address', 'telephone', 'email', 'number'].inject([:]) { map, prop ->
+        ['firstName', 'lastName', 'companyName', 'title', 'address', 'telephone', 'email', 'number'].inject([:]) { map, prop ->
             def v = this[prop]
             if (v != null) {
                 map[prop] = v
