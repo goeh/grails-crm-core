@@ -41,6 +41,8 @@ abstract class CrmLookupEntity {
         cache usage: 'nonstrict-read-write'
     }
 
+    static transients = ['dao']
+
     static searchable = [only: ['name', 'description']]
 
     static List BIND_WHITELIST = ['orderIndex', 'enabled', 'name', 'param', 'icon', 'description'].asImmutable()
@@ -58,6 +60,13 @@ abstract class CrmLookupEntity {
                 }
             }
             orderIndex = mx ? mx + 1 : 1
+        }
+    }
+
+    transient Map<String, Object> getDao() {
+        BIND_WHITELIST.inject([:]) {map, p ->
+            map[p] = this[p]
+            map
         }
     }
 
