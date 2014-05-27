@@ -35,7 +35,7 @@ grails.project.dependency.resolution = {
         test(":codenarc:0.19") { export = false }
         test(":code-coverage:1.2.7") { export = false }
 
-        compile(":platform-core:1.0.RC5") { excludes 'resources' }
+        compile(":platform-core:1.0.0") { excludes 'resources' }
     }
 }
 
