@@ -30,7 +30,6 @@ class ClosureDelegate {
     final Map props
     final Map model
 
-    @CompileStatic
     ClosureDelegate(Object delegate, GrailsApplication app, Map model, Map concreteProps) {
         this.methodDelegate = delegate
         this.props = concreteProps

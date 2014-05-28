@@ -102,14 +102,4 @@ abstract class CrmLookupEntity {
         result = 31 * result + (param != null ? param.hashCode() : 0)
         return result
     }
-
-    /**
-     * CrmLookupEntity used to implement Comparable but due to https://jira.codehaus.org/browse/GROOVY-3364
-     * it is not possible. This comparator will make it easier to sort CrmLookupEntity instances by orderIndex.
-     * <code>listOfInstances.sort(CrmLookupEntity.COMPARATOR)</code>
-     * @return
-     */
-    static final Comparator COMPARATOR = {CrmLookupEntity a, CrmLookupEntity b ->
-        a.orderIndex <=> b.orderIndex
-    } as Comparator
 }

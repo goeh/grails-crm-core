@@ -95,7 +95,7 @@ class Graph {
     }
 
     private List<Vertex> findLeafs(final List<Vertex> vList, final List<Edge> eList) {
-        vList.findAll { Vertex v -> !eList.find { Edge e -> v == e.source } }
+        vList.findAll { Vertex v -> !eList.find { Edge e -> v == e.source } } as List
     }
 
     String toString() {

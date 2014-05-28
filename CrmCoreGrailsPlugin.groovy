@@ -22,8 +22,8 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.2.8"
-    def grailsVersion = "2.2 > *"
+    def version = "1.4.0-SNAPSHOT"
+    def grailsVersion = "2.4 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
     def pluginExcludes = [

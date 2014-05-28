@@ -19,7 +19,7 @@ package grails.plugins.crm.core
 /**
  * Test CrmCoreService methods.
  */
-class CrmCoreServiceSpec extends grails.plugin.spock.IntegrationSpec {
+class CrmCoreServiceSpec extends grails.test.spock.IntegrationSpec {
 
     def crmCoreService
 

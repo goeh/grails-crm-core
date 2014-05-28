@@ -31,7 +31,6 @@ class ClosureToMap {
         return map
     }
 
-    @CompileStatic
     ClosureToMap(Map map, Closure c) {
         iterate(map, c)
     }

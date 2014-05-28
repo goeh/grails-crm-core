@@ -16,7 +16,7 @@
 
 package grails.plugins.crm.core
 
-import grails.plugin.spock.IntegrationSpec
+import grails.test.spock.IntegrationSpec
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 /**

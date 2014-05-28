@@ -18,7 +18,7 @@ package grails.plugins.crm.core
 
 import org.springframework.mock.web.MockHttpServletRequest
 
-class CrmSecurityServiceSpec extends grails.plugin.spock.IntegrationSpec {
+class CrmSecurityServiceSpec extends grails.test.spock.IntegrationSpec {
 
     def crmSecurityService
     def grailsApplication

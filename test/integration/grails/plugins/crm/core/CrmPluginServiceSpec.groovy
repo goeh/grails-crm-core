@@ -18,7 +18,7 @@ package grails.plugins.crm.core
 /**
  * Test CrmPluginService
  */
-class CrmPluginServiceSpec extends grails.plugin.spock.IntegrationSpec {
+class CrmPluginServiceSpec extends grails.test.spock.IntegrationSpec {
 
     def crmPluginService
 
