@@ -22,7 +22,7 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.2.8"
+    def version = "1.2.9"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
@@ -36,7 +36,7 @@ class CrmCoreGrailsPlugin {
     def author = "Goran Ehrsson"
     def authorEmail = "goran@technipelago.se"
     def description = '''\
-GR8 CRM Core Functionality.
+GR8 CRM Core Functionality. See http://gr8crm.github.io for more information.
 '''
     def documentation = "https://github.com/goeh/grails-crm-core"
     def license = "APACHE"
