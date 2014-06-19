@@ -4,7 +4,7 @@ v0.1, 2014-06-19
 :toc:
 :numbered:
 :icons: font
-:imagesdir: ../images
+:imagesdir: ./images
 :source-highlighter: prettify
 :homepage: http://gr8crm.github.io
 :pluginversion: 1.2.11-SNAPSHOT
@@ -239,7 +239,7 @@ The property is set to +TenantUtils.getTenant()+ when the domain class is instan
 [source,groovy]
 .Customer.groovy
 ----
-include::groovy/TenantEntity.groovy[]
+include::samples/TenantEntity.groovy[]
 ----
 
 === @AuditEntity
@@ -248,7 +248,7 @@ This transformation adds +dateCreated+ and +lastUpdated+ Date properties to the 
 [source,groovy]
 .Author.groovy
 ----
-include::groovy/AuditEntity.groovy[]
+include::samples/AuditEntity.groovy[]
 ----
 
 === @UuidEntity
@@ -258,7 +258,7 @@ The property is set to +UUID.randomUUID().toString()+ when the domain class is i
 [source,groovy]
 .MyEvent.groovy
 ----
-include::groovy/UuidEntity.groovy[]
+include::samples/UuidEntity.groovy[]
 ----
 
 == Configuration
