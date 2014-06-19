@@ -20,3 +20,5 @@ stacktrace.log
 /.link_to_grails_plugins/
 /target-eclipse/
 /src/docs/guide/*.html
+/src/docs/guide/*.xml
+/src/docs/guide/*.pdf
