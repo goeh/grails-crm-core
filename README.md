@@ -11,7 +11,7 @@ With CRM we mean features like:
 - Project Management
 - Document Management
 
-The GR8 CRM "Ecosystem" currently contains over 40 Grails plugins. For a complete list of plugins see [http://gr8crm.github.io].
+The GR8 CRM "Ecosystem" currently contains over 40 Grails plugins. For a complete list of plugins see http://gr8crm.github.io
 
 Each GR8 CRM plugin defines a [Bounded Context](http://martinfowler.com/bliki/BoundedContext.html)
 that focus on one specific domain, for example *contact*, *project* or *document*.
@@ -21,7 +21,7 @@ GR8 CRM plugins are allowed to have compile-time dependency on the *crm-core* pl
 
 ## Services
 
-*crm-core* provide the following services.
+The *crm-core* plugin provide the following services.
 
 ### CrmCoreService
 
@@ -64,11 +64,13 @@ Every plugin in the GR8 CRM suite is multi-tenant aware, this means that multipl
 same database but they will only see their own information. Every user work in a safe watertight compartment.
 But multi-tenancy in GR8 CRM is not implemented at the database (Hibernate) layer. It's implemented in
 application logic. This means that the developer is responsible for retrieving information about the current
-executing tenant and restrict queries to a tenant. The reason for this design is that the multi-tenancy support
-in GR8 CRM extends beyond simple one-one relationship between a user and a tenant. One user can have access to
-multiple tenants simultaneously. A user **always** execute in **one** tenant, but the user may have permission
-to view information in other tenants. For example in a calendar view appointments/tasks from multiple tenants
-could be overlaid on top of each other. Statistic reports and other "management" type of queries may span multiple tenants.
+executing tenant and restrict queries to a tenant.
+
+The reason for this design is that the multi-tenancy support in GR8 CRM extends beyond simple one-one relationship
+between a user and a tenant. One user can have access to multiple tenants simultaneously.
+A user **always** execute in **one** tenant, but the user may have permission to view information in other tenants.
+For example in a calendar view appointments/tasks from multiple tenants could be overlaid on top of each other.
+Statistic reports and other "management" type of queries may span multiple tenants.
 Therefore it's up to the developer of the application or plugin to decide how a query should be restricted.
 
 **public static Long getTenant()**
@@ -81,13 +83,13 @@ Execute some work on behalf of a tenant. The tenant will be saved in a ThreadLoc
 The previous tenant will be restored after this method completes.
 The return value is the return value of the Closure passed to the method.
 
-IMPORTANT! If the Closure spawns a new thread, the tenant ID must be passed to the new thread and the new thread must
+**IMPORTANT!** If the Closure spawns a new thread, the tenant ID must be passed to the new thread and the new thread must
 call *TenantUtils.withTenant()*. Otherwise the new thread will not execute in a tenant.
 
 HTTP requests to Grails controller actions will automatically execute in a tenant because *CrmTenantFilters*
 will intercept the request and set the correct tenant, based on information stored in the user's HTTP session.
 So you don't need to use *TenantUtils.withTenant()* in normal controller/service code but for tasks executing
-outside an HTTP request you must, for example in Quartz background jobs.
+outside of a HTTP request you must, for example in Quartz background jobs.
 
 ### DateUtils
 
