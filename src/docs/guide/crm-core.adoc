@@ -158,7 +158,7 @@ Return the ID of current executing tenant.
 
 +public static Object withTenant(Long tenantId, Closure work)+
 
-Execute some work on behalf of a tenant. The tenant will be saved in a ThreadLocal.
+Execute some work on behalf of a tenant. The tenant will be saved in a ThreadLocal variable.
 The previous tenant will be restored after this method completes.
 The return value is the return value of the Closure passed to the method.
 
@@ -262,3 +262,11 @@ include::groovy/UuidEntity.groovy[]
 ----
 
 == Configuration
+
+== License
+
+This plugin is licensed with http://www.apache.org/licenses/LICENSE-2.0.html[Apache License version 2.0]
+
+== Source Code
+
+The source code for this plugin is available at https://github.com/goeh/grails-crm-core
