@@ -267,8 +267,6 @@ The property is set to +UUID.randomUUID().toString()+ when the domain class is i
 include::{projectdir}/src/docs/samples/UuidEntity.groovy[]
 ----
 
-== Configuration
-
 == License
 
 This plugin is licensed with http://www.apache.org/licenses/LICENSE-2.0.html[Apache License version 2.0]
