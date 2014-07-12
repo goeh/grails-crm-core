@@ -1,14 +1,14 @@
 = GR8 CRM - Core Plugin
 Göran Ehrsson <goran@technipelago.se>
-v0.1, 2014-06-19
 :toc:
 :numbered:
 :icons: font
 :imagesdir: ./images
 :source-highlighter: prettify
 :homepage: http://gr8crm.github.io
-:pluginversion: 1.2.11-SNAPSHOT
 :gr8crm: GR8 CRM
+:gr8source: https://github.com/goeh/grails-crm-core
+:license: This plugin is licensed with http://www.apache.org/licenses/LICENSE-2.0.html[Apache License version 2.0]
 
 == Introduction
 
@@ -92,9 +92,15 @@ The next security sub-plugin will be based on http://grails.org/plugin/spring-se
 and we look forward to contributions. ;-)
 ====
 
+== CRM Core Plugin
+
+The +crm-core+ plugin does not provide much visual functionality. It contains common features that other {gr8crm} plugins use.
+Normally you don't include +crm-core+ in your application's +BuildConfig.groovy+, instead you include dependencies on other
+high-level {gr8crm} plugins that transitively depends on crm-core. However if you are a {gr8crm} plugin developer you may depend on crm-core directly.
+
 == Services
 
-The *crm-core* plugin provide a few services with common functionality used by many {gr8crm} plugins.
+The *crm-core* plugin provide a few services with common functionality used by other {gr8crm} plugins.
 
 === CrmCoreService
 
@@ -239,7 +245,7 @@ The property is set to +TenantUtils.getTenant()+ when the domain class is instan
 [source,groovy]
 .Customer.groovy
 ----
-include::samples/TenantEntity.groovy[]
+include::{projectdir}/src/docs/samples/TenantEntity.groovy[]
 ----
 
 === @AuditEntity
@@ -248,7 +254,7 @@ This transformation adds +dateCreated+ and +lastUpdated+ Date properties to the 
 [source,groovy]
 .Author.groovy
 ----
-include::samples/AuditEntity.groovy[]
+include::{projectdir}/src/docs/samples/AuditEntity.groovy[]
 ----
 
 === @UuidEntity
@@ -258,7 +264,7 @@ The property is set to +UUID.randomUUID().toString()+ when the domain class is i
 [source,groovy]
 .MyEvent.groovy
 ----
-include::samples/UuidEntity.groovy[]
+include::{projectdir}/src/docs/samples/UuidEntity.groovy[]
 ----
 
 == Configuration
