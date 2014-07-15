@@ -24,7 +24,7 @@ asciidoctor {
         attributes: [
             revnumber: project.version,
             toc: '',
-            idprefix: '',
+            idprefix: 'crm-',
             idseparator: '-',
             'source-highlighter': 'prettify'
         ]
