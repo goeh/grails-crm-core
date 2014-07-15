@@ -22,7 +22,7 @@ import grails.plugins.crm.core.ApplicationContextHolder
  */
 class CrmCoreGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.2.10"
+    def version = "1.2.11"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
@@ -55,7 +55,7 @@ GR8 CRM Core Functionality. See http://gr8crm.github.io for more information.
 
     def doWithApplicationContext = { applicationContext ->
         if (applicationContext.containsBean("gormSelection")) {
-            // TODO Hack warning: soft reference to selection plugin
+            // TODO Soft reference to selection plugin is kind of ugly.
             applicationContext.getBean("gormSelection").fixedCriteria = { query, params ->
                 if (targetClass.metaClass.respondsTo(null, 'getTenantId')) {
                     eq('tenantId', TenantUtils.tenant)
