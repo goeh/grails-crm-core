@@ -76,12 +76,15 @@ class DateUtilsSpec extends Specification {
     }
 
     def "test isBefore"() {
-        expect:
-        DateUtils.isBefore(new Date(), new Date() + 7)
-        DateUtils.isBefore(new Date(), new Date() + 1)
+        given:
+        def now = new Date()
 
-        !DateUtils.isBefore(new Date(), new Date())
-        !DateUtils.isBefore(new Date(), new Date() - 1)
+        expect:
+        DateUtils.isBefore(now, new Date() + 7)
+        DateUtils.isBefore(now, new Date() + 1)
+
+        !DateUtils.isBefore(now, now)
+        !DateUtils.isBefore(now, new Date() - 1)
     }
 
     def "test getFirstDayOfWeek"() {
