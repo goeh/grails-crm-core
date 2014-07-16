@@ -15,12 +15,14 @@ Göran Ehrsson <goran@technipelago.se>
 {gr8crm} is a set of http://www.grails.org/[Grails Web Application Framework]
 plugins that makes it easy to develop web applications with CRM functionality.
 
-=== Customer relationship management
+You can find more information about {gr8crm} on the main documentation site {homepage}.
+
+=== Customer Relationship Management
 Customer relationship management (CRM) is a system for managing a company’s interactions with current and future customers.
 It involves using technology to organize, automate and synchronize sales, marketing, customer service, and technical support.
 http://en.wikipedia.org/wiki/Customer_relationship_management[Wikipedia]
 
-The {gr8crm} "Ecosystem" currently contains over 40 Grails plugins. For a complete list of plugins see http://gr8crm.github.io.
+The {gr8crm} "Ecosystem" currently contains over 40 Grails plugins. For a complete list of plugins see {homepage}.
 
 Each {gr8crm} plugin defines a http://martinfowler.com/bliki/BoundedContext.html[Bounded Context]
 that focus on one specific domain, for example *contact*, *project* or *document*.
