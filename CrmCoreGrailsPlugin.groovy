@@ -38,7 +38,7 @@ class CrmCoreGrailsPlugin {
     def description = '''\
 GR8 CRM Core Functionality. See http://gr8crm.github.io for more information.
 '''
-    def documentation = "http://gr8crm.github.io/plugins/crm-core/crm-core.html"
+    def documentation = "http://gr8crm.github.io/plugins/crm-core/"
     def license = "APACHE"
     def organization = [name: "Technipelago AB", url: "http://www.technipelago.se/"]
     def issueManagement = [system: "github", url: "https://github.com/goeh/grails-crm-core/issues"]
