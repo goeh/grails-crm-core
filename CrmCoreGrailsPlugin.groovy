@@ -21,7 +21,7 @@ import grails.plugins.crm.core.ApplicationContextHolder
  * GR8 CRM Core Plugin.
  */
 class CrmCoreGrailsPlugin {
-    def groupId = "gr8crm"
+    def groupId = ""
     def version = "2.0.0"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
