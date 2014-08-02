@@ -10,6 +10,8 @@ public interface CrmContactInformation {
 
     String getCompanyName();
 
+    Long getCompanyId();
+
     String getName();
 
     String getFullName();

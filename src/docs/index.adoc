@@ -1,5 +1,7 @@
 = GR8 CRM - Core Plugin
 Göran Ehrsson <goran@technipelago.se>
+:description: Official documentation for the GR8 CRM Core Plugin
+:keywords: groovy, grails, crm, gr8crm, documentation
 :toc:
 :numbered:
 :icons: font
@@ -268,6 +270,11 @@ The property is set to +UUID.randomUUID().toString()+ when the domain class is i
 ----
 include::{projectdir}/src/docs/samples/UuidEntity.groovy[]
 ----
+
+== Changes
+
+2.0.1:: Interface +CrmContactInformation+ changed. New getter method +Long getCompanyId()+.
+2.0.0:: First public release
 
 == License
 
