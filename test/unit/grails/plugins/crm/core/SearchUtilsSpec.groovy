@@ -136,6 +136,12 @@ class SearchUtilsSpec extends Specification {
 
         then:
         crit.success
+
+        when:
+        SearchUtils.doubleQuery(crit, 'test', '24 42', swedish)
+
+        then:
+        crit.success
     }
 
 

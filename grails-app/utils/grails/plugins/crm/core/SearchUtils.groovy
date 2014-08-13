@@ -84,14 +84,17 @@ final class SearchUtils {
         }
         final DecimalFormat format = DecimalFormat.getNumberInstance(locale)
         if (query[0] == '<') {
-            criteriaDelegate.lt(prop, format.parse(query.substring(1)))
+            criteriaDelegate.lt(prop, format.parse(query.substring(1)).doubleValue())
         } else if (query[0] == '>') {
-            criteriaDelegate.gt(prop, format.parse(query.substring(1)))
+            criteriaDelegate.gt(prop, format.parse(query.substring(1)).doubleValue())
         } else if (query.contains('-')) {
             def (from, to) = query.split('-').toList()
-            criteriaDelegate.between(prop, format.parse(from), format.parse(to))
+            criteriaDelegate.between(prop, format.parse(from).doubleValue(), format.parse(to).doubleValue())
+        } else if (query.contains(' ')) {
+            def (from, to) = query.split(' ').toList()
+            criteriaDelegate.between(prop, format.parse(from).doubleValue(), format.parse(to).doubleValue())
         } else {
-            criteriaDelegate.eq(prop, format.parse(query))
+            criteriaDelegate.eq(prop, format.parse(query).doubleValue())
         }
     }
 
