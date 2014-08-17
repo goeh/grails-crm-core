@@ -241,13 +241,15 @@ All lookup entities in GR8 CRM plugins extend *CrmLookupEntity* and get the foll
 
 === CrmValidationException
 
-This exception is throws by services when data binding fails.
+This exception is thrown by services when data binding fails.
 The exception instance can carry one or more domain instances involved in the data binding.
+The constructor takes a message key and a variable number of domain instance arguments.
+The controller that called the service can pick up domain instances from the exception and render validation errors in the browser.
 
 [source,groovy]
 .MyService.groovy
 ----
-def save(Map params) {
+MyDomain save(Map params) {
     ...
     if(! myDomain.save()) {
         throw new CrmValidationException('myDomain.validation.error', myDomain)
@@ -260,7 +262,7 @@ def save(Map params) {
 .MyController.groovy
 ----
 def saveAction() {
-    def domainInstance
+    MyDomain domainInstance
     try {
         domainInstance = myService.save(params)
     } catch(CrmValidationException e) {
