@@ -237,6 +237,43 @@ All lookup entities in GR8 CRM plugins extend *CrmLookupEntity* and get the foll
     String description  // 2000 chars
 ----
 
+== Exceptions
+
+=== CrmValidationException
+
+This exception is throws by services when data binding fails.
+The exception instance can carry one or more domain instances involved in the data binding.
+
+[source,groovy]
+.MyService.groovy
+----
+def save(Map params) {
+    ...
+    if(! myDomain.save()) {
+        throw new CrmValidationException('myDomain.validation.error', myDomain)
+    }
+    myDomain
+}
+----
+
+[source,groovy]
+.MyController.groovy
+----
+def saveAction() {
+    def domainInstance
+    try {
+        domainInstance = myService.save(params)
+    } catch(CrmValidationException e) {
+        domainInstance = e.domainInstance
+    }
+    if(domainInstance.hasErrors()) {
+        render view: "create", model: [bean: domainInstance]
+    } else {
+        redirect action: "show", id: domainInstance.ident()
+    }
+}
+----
+
 == AST Transformations
 
 The *crm-core* plugin provides a collection of useful AST Transformations.
