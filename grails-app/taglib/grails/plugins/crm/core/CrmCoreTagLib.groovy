@@ -140,4 +140,15 @@ class CrmCoreTagLib {
             }
         }
     }
+
+    /**
+     * Render block of markup with a different tenant.
+     * @attr tenant REQUIRED the tenant to execute in.
+     */
+    def withTenant = { attrs, body ->
+        Long tenant = attrs.tenant ?: TenantUtils.tenant
+        TenantUtils.withTenant(tenant) {
+            out << body()
+        }
+    }
 }
