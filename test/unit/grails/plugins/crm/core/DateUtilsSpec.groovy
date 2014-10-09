@@ -93,6 +93,42 @@ class DateUtilsSpec extends Specification {
         DateUtils.getFirstDayOfWeek(new Locale('en_US'), TimeZone.getTimeZone("US/Pacific")) == 1
     }
 
+    def "test date span"() {
+        when:
+        def (start, end) = DateUtils.getDateSpan(createDate(2014, 12, 9, TimeZone.getTimeZone("Europe/Stockholm")))
+
+        then:
+        start.format("yyyy-MM-dd HH:mm:ss") == "2014-12-09 00:00:00"
+        end.format("yyyy-MM-dd HH:mm:ss") == "2014-12-09 23:59:59"
+    }
+
+    def "test month span current month"() {
+        when:
+        def (start, end) = DateUtils.getMonthSpan(0, createDate(2014, 12, 9, TimeZone.getTimeZone("Europe/Stockholm")))
+
+        then:
+        start.format("yyyy-MM-dd HH:mm:ss") == "2014-12-01 00:00:00"
+        end.format("yyyy-MM-dd HH:mm:ss") == "2014-12-31 23:59:59"
+    }
+
+    def "test month span previous month"() {
+        when:
+        def (start, end) = DateUtils.getMonthSpan(-1, createDate(2014, 12, 9, TimeZone.getTimeZone("Europe/Stockholm")))
+
+        then:
+        start.format("yyyy-MM-dd HH:mm:ss") == "2014-11-01 00:00:00"
+        end.format("yyyy-MM-dd HH:mm:ss") == "2014-11-30 23:59:59"
+    }
+
+    def "test month span next month"() {
+        when:
+        def (start, end) = DateUtils.getMonthSpan(1, createDate(2014, 12, 9, TimeZone.getTimeZone("Europe/Stockholm")))
+
+        then:
+        start.format("yyyy-MM-dd HH:mm:ss") == "2015-01-01 00:00:00"
+        end.format("yyyy-MM-dd HH:mm:ss") == "2015-01-31 23:59:59"
+    }
+
     private Date createDate(int y, int m, int d, TimeZone timezone) {
         Calendar cal = Calendar.getInstance(timezone, new Locale("en_US"))
         cal.clearTime()
