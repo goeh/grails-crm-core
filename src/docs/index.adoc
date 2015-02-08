@@ -1,0 +1,330 @@
+= GR8 CRM - Core Plugin
+Göran Ehrsson <goran@technipelago.se>
+:description: Official documentation for the GR8 CRM Core Plugin
+:keywords: groovy, grails, crm, gr8crm, documentation
+:toc:
+:numbered:
+:icons: font
+:imagesdir: ./images
+:source-highlighter: prettify
+:homepage: http://gr8crm.github.io
+:gr8crm: GR8 CRM
+:gr8source: https://github.com/goeh/grails-crm-core
+:license: This plugin is licensed with http://www.apache.org/licenses/LICENSE-2.0.html[Apache License version 2.0]
+
+== Introduction
+
+{gr8crm} is a set of http://www.grails.org/[Grails Web Application Framework]
+plugins that makes it easy to develop web applications with CRM functionality.
+
+You can find more information about {gr8crm} on the main documentation site {homepage}.
+
+=== Customer Relationship Management
+Customer relationship management (CRM) is a system for managing a company’s interactions with current and future customers.
+It involves using technology to organize, automate and synchronize sales, marketing, customer service, and technical support.
+http://en.wikipedia.org/wiki/Customer_relationship_management[Wikipedia]
+
+The {gr8crm} "Ecosystem" currently contains over 40 Grails plugins. For a complete list of plugins see {homepage}.
+
+Each {gr8crm} plugin defines a http://martinfowler.com/bliki/BoundedContext.html[Bounded Context]
+that focus on one specific domain, for example *contact*, *project* or *document*.
+A {gr8crm} plugin have minimal dependencies on other {gr8crm} plugins. However there are some common features that most plugins need.
+Like working with date/time, caching and multi-tenancy features. Such common features are provided by the *crm-core* plugin.
+{gr8crm} plugins are allowed to have compile-time dependency on the *crm-core* plugin but should avoid dependency on other {gr8crm} plugins if possible.
+
+== Multitenancy
+
+Multitenancy refers to a principle in software architecture where a single instance of the software runs on a server,
+serving multiple client organizations (tenants).
+Multitenancy is contrasted with a multi-instance architecture where separate software instances (or hardware systems)
+are set up for different client organizations. With a multitenant architecture, a software application is designed to
+virtually partition its data and configuration, and each client organization works with a customized virtual application instance.
+Multitenancy is also regarded as one of the essential attributes of cloud computing. http://en.wikipedia.org/wiki/Multitenancy[Wikipedia]
+
+=== {gr8crm} has multitenancy built-in
+{gr8crm} implements a very simple approach to multitenancy. All domain classes that are tenant-specific
+must have a `tenantId` property of type `Long`. All code that work with tenant specific domain instances
+must handle the tenantId property "manually". With a few exceptions there is no automatic filtering going on behind the scenes.
+
+The reason for not having automatic filtering (for example using Hibernate Filters) is that in {gr8crm}
+a user can access more than one tenant at a given time. Users can have roles and permissions that span
+multiple tenants. There is still a notion of *current tenant* but certain features can access other
+tenants that the user have access to. A calender view is a typical example where a user can see items from
+different tenants in the same calendar view. Another example is a sales manager that want to view a forecast
+from all regions in a country where each region is a separate tenant.
+Therefore tenant filtering is done by business logic in services and controllers.
+It's a freedom that brings with it great deal of responsibility and it requires serious *test coverage*.
+One missing tenant filter somewhere can result in fatal security issues.
+
+IMPORTANT: You as a developer are responsible for tenant filtering. Never forget that. And always write tests!
+
+=== Tenant-aware domain class
+To make a domain class tenant-aware you add the `TenantEntity` annotation to the class.
+
+[source,groovy]
+----
+@TenantEntity
+class Person {
+  String name
+}
+----
+
+This annotation trigger an AST transformation that adds a `Long tenantId` property to the domain class.
+The property is set to `TenantUtils.getTenant()` when the domain class is instantiated.
+
+=== Current Tenant
+{gr8crm} resolves the current executing tenant from the HTTP request or the HTTP session.
+The tenant resolver sets the current tenant in a ThreadLocal variable and you use the `TenantUtils.getTenant()` to access it.
+
+=== Tenant aware query
+
+[source,groovy]
+----
+def joe = Person.findByTenantIdAndName(TenantUtils.tenant, "Joe Average")
+----
+
+== Security
+
+{gr8crm} is designed to work with different security implementations.
+A core plugin called *crm-security* manages generic application security and it delegates implementation specific calls to
+a sub-plugin. One such sub-plugin is *crm-securiy-shiro* that uses http://grails.org/plugin/shiro[Apache Shiro] for user,
+role and permission management.
+
+[NOTE]
+====
+The next security sub-plugin will be based on http://grails.org/plugin/spring-security-core[Spring Security]
+and we look forward to contributions. ;-)
+====
+
+== CRM Core Plugin
+
+The `crm-core` plugin does not provide much visual functionality. It contains common features that other {gr8crm} plugins use.
+Normally you don't include `crm-core` in your application's `BuildConfig.groovy`, instead you include dependencies on other
+high-level {gr8crm} plugins that transitively depends on crm-core. However if you are a {gr8crm} plugin developer you may depend on crm-core directly.
+
+== Services
+
+The *crm-core* plugin provide a few services with common functionality used by other {gr8crm} plugins.
+
+=== CrmCoreService
+
+`String getReferenceIdentifier(Object object)`
+
+Return a string representation of a domain instance. This string contains both the domain type and the primary key.
+The format is *"domainName@primaryKey"*, for example: "customerOrder@42".
+This makes it possible to store the reference in a `String` property and re-create the domain instance later.
+Because the domain type is stored in a readable form it is also possible to query the property to find
+all objects of the same type or query for an exact match on a specific domain instance.
+
+[source,groovy]
+----
+SomeDomain.findAllByReferenceLike("customerOrder%") // Find all objects that contains a customer order
+SomeDomain.findByReference("customerOrder@42") // Find the object that contains customer order with id 42.
+----
+
+`def getReference(String identifier)`
+
+The method `getReference` is the opposite of `getReferenceIdentifier()`.
+Given a reference identifier the method return a re-constructed domain instance.
+
+[source,groovy]
+----
+def order = crmCoreService.getReference("customerOrder@42")
+----
+
+=== CrmPluginService
+
+`void registerView(final String controller, final String action, final String location, final Map params)`
+
+Inject a custom GSP view in an existing GSP view.
+
+`List getViews(final String controller, final String action, final String location)`
+
+Return a list of custom views injected in a GSP view with `registerView()`.
+
+== Utilities
+
+=== TenantUtils
+
+This utility class is the most used utility class in {gr8crm}.
+It's used to set and get the current executing *tenant* in a multi-tenant environment.
+
+Every plugin in the {gr8crm} suite is multi-tenant aware, this means that multiple users can work in the
+same database but they will only see their own information. Every user work in a safe watertight compartment.
+But multi-tenancy in {gr8crm} is not implemented at the database (Hibernate) layer. It's implemented in
+application logic. This means that the developer is responsible for retrieving information about the current
+executing tenant and restrict queries to a tenant.
+
+The reason for this design is that the multi-tenancy support in {gr8crm} extends beyond simple one-one relationship
+between a user and a tenant. One user can have access to multiple tenants simultaneously.
+A user *always* execute in *one* tenant, but the user may have permission to view information in other tenants.
+For example in a calendar view appointments/tasks from multiple tenants could be overlaid on top of each other.
+Statistic reports and other "management" type of queries may span multiple tenants.
+Therefore it's up to the developer of the application or plugin to decide how a query should be restricted.
+
+`public static Long getTenant()`
+
+Return the ID of current executing tenant.
+
+`public static Object withTenant(Long tenantId, Closure work)`
+
+Execute some work on behalf of a tenant. The tenant will be saved in a ThreadLocal variable.
+The previous tenant will be restored after this method completes.
+The return value is the return value of the Closure passed to the method.
+
+[IMPORTANT]
+====
+If the Closure spawns a new thread, the tenant ID must be passed to the new thread and the new thread must
+call *TenantUtils.withTenant()*. Otherwise the new thread will not execute in a tenant.
+====
+
+HTTP requests to Grails controller actions will automatically execute in a tenant because *CrmTenantFilters*
+will intercept the request and set the correct tenant, based on information stored in the user's HTTP session.
+So you don't need to use *TenantUtils.withTenant()* in normal controller/service code but for tasks executing
+outside of a HTTP request you must, for example in Quartz background jobs.
+
+=== DateUtils
+
+`static Date parseDate(String input, TimeZone tz = UTC)`
+
+Parse a date string and return a date instance.
+
+`static String formatDate(final Date date, TimeZone tz = UTC)`
+
+Format a date instance as a String.
+
+=== SearchUtils
+
+`static String wildcard(String q)`
+
+Replaces asterisk (*) in the input string with '%'.
+
+=== WebUtils
+
+`static void shortCache(final HttpServletResponse response)`
+
+Cache a HTTP response for 2 minutes.
+
+`static void defaultCache(final HttpServletResponse response)`
+
+Cache a HTTP response for 10 minutes.
+
+`static String bytesFormatted(final Number b)`
+
+Returns a human friendly representation of number of bytes.
+
+* 0-1024 is presented as is
+* 1025-10240000 is presented as kB
+* > 10240000 is presented as MB
+
+== Abstract Domain Classes
+
+The *crm-core* plugin provides some useful domain classes that are abstract and can be extended in applications or plugins.
+
+=== CrmLookupEntity
+
+Lookup entities are domain classes that hold reference/lookup information. For example Customer Type or Project Category.
+All lookup entities in GR8 CRM plugins extend *CrmLookupEntity* and get the following properties:
+
+[source,groovy]
+.CrmLookupEntity.groovy
+----
+    int orderIndex      // Used for sorting list
+    boolean enabled     // False means disabled/do-not-use
+    String name         // 80 chars
+    String param        // 20 chars
+    String icon         // 100 chars
+    String description  // 2000 chars
+----
+
+== Exceptions
+
+=== CrmValidationException
+
+This exception is thrown by services when data binding fails.
+The exception instance can carry one or more domain instances involved in the data binding.
+The constructor takes a message key and a variable number of domain instance arguments.
+The controller that called the service can pick up domain instances from the exception and render validation errors in the browser.
+
+[source,groovy]
+.MyService.groovy
+----
+MyDomain save(Map params) {
+    ...
+    if(! myDomain.save()) {
+        throw new CrmValidationException('myDomain.validation.error', myDomain)
+    }
+    myDomain
+}
+----
+
+[source,groovy]
+.MyController.groovy
+----
+def saveAction() {
+    MyDomain domainInstance
+    try {
+        domainInstance = myService.save(params)
+    } catch(CrmValidationException e) {
+        domainInstance = e.domainInstance
+    }
+    if(domainInstance.hasErrors()) {
+        render view: "create", model: [bean: domainInstance]
+    } else {
+        redirect action: "show", id: domainInstance.ident()
+    }
+}
+----
+
+== AST Transformations
+
+The *crm-core* plugin provides a collection of useful AST Transformations.
+Most of the transformations are related to domain classes.
+
+=== @TenantEntity
+This transformation adds a `Long tenantId` property to the domain class.
+The property is set to `TenantUtils.getTenant()` when the domain class is instantiated.
+
+[source,groovy]
+.Customer.groovy
+----
+include::{projectdir}/src/docs/samples/TenantEntity.groovy[]
+----
+
+=== @AuditEntity
+This transformation adds `dateCreated` and `lastUpdated` Date properties to the domain class.
+
+[source,groovy]
+.Author.groovy
+----
+include::{projectdir}/src/docs/samples/AuditEntity.groovy[]
+----
+
+=== @UuidEntity
+This transformation adds a `String guid` property to the domain class.
+The property is set to `UUID.randomUUID().toString()` when the domain class is instantiated.
+
+[source,groovy]
+.MyEvent.groovy
+----
+include::{projectdir}/src/docs/samples/UuidEntity.groovy[]
+----
+
+== Changes
+
+2.0.1:: Interface `CrmContactInformation` changed. New getter method `Long getCompanyId()`.
+2.0.0:: First public release
+
+== License
+
+This plugin is licensed with http://www.apache.org/licenses/LICENSE-2.0.html[Apache License version 2.0]
+
+== Source Code
+
+The source code for this plugin is available at https://github.com/goeh/grails-crm-core
+
+== Contributing
+
+Please report {gr8source}/issues[issues or suggestions].
+
+Want to improve the plugin: Fork the {gr8source}[repository] and send a pull request.

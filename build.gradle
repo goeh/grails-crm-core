@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.0'
+    }
+}
+
+apply plugin: 'org.asciidoctor.gradle.asciidoctor'
+
+def pluginDescriptor = projectDir.listFiles().find { it.name.endsWith('GrailsPlugin.groovy') }
+
+version = (pluginDescriptor.text =~ /def\s+version\s*=\s*"(.+)"/)[0][1]
+
+def gr8crmDir = new File("../../gr8crm.github.io/plugins")
+
+asciidoctor {
+    sourceDir = new File("src/docs")
+    outputDir = new File(gr8crmDir, project.name)
+    options = [
+        eruby: 'erubis',
+        attributes: [
+            revnumber: project.version,
+            toc: '',
+            idprefix: 'crm-',
+            idseparator: '-',
+            'source-highlighter': 'prettify'
+        ]
+    ]
+}

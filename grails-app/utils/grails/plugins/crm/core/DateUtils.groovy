@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Goran Ehrsson.
+ * Copyright (c) 2014 Goran Ehrsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,10 +31,14 @@ import groovy.time.Duration
 final class DateUtils {
     private DateUtils() {}
 
-    static String DATE_FORMAT = 'yyyy-MM-dd' // Formatting
-    static List<String> DATE_FORMATS = ['yyyy-MM-dd', 'yyyyMMdd', 'yyMMdd'] // Parsing
-    static String DATETIME_FORMAT = 'yyyy-MM-dd HH:mm' // Formatting
-    static List<String> DATETIME_FORMATS = ['yyyy-MM-ddHH:mm', 'yyyyMMddHHmm', 'yyMMddHHmm', 'yyyy-MM-dd', 'yyyyMMdd', 'yyMMdd'] // Parsing
+    // Formatting
+    static String DATE_FORMAT = 'yyyy-MM-dd'
+    // Parsing
+    static List<String> DATE_FORMATS = ['yyyy-MM-dd', 'yyyyMMdd', 'yyMMdd', 'M/d/yy']
+    // Formatting
+    static String DATETIME_FORMAT = 'yyyy-MM-dd HH:mm'
+    // Parsing
+    static List<String> DATETIME_FORMATS = ['yyyy-MM-ddHH:mm', 'yyyyMMddHHmm', 'yyMMddHHmm', 'yyyy-MM-dd', 'yyyyMMdd', 'yyMMdd', 'M/d/yyHH:mm', 'M/d/yy']
 
     protected static final TimeZone UTC = TimeZone.getTimeZone('UTC')
     protected static final Locale SWEDISH = new Locale('sv', 'SE')
@@ -46,15 +50,16 @@ final class DateUtils {
     }
 
     @CompileStatic
+    @Deprecated
     static String format(final Date date, final String format, TimeZone tz = UTC) {
-        final DateFormat fmt = new SimpleDateFormat(format, DateUtils.SWEDISH)
+        final DateFormat fmt = new SimpleDateFormat(format, SWEDISH)
         fmt.timeZone = tz
         fmt.format(date)
     }
 
     @CompileStatic
     static String formatDate(final Date date, TimeZone tz = UTC) {
-        DateFormat fmt = new SimpleDateFormat(DATE_FORMAT, DateUtils.SWEDISH)
+        DateFormat fmt = new SimpleDateFormat(DATE_FORMAT, SWEDISH)
         fmt.timeZone = tz
         fmt.format(date)
     }
@@ -82,7 +87,7 @@ final class DateUtils {
             DATE_FORMATS.each { final String fmt ->
                 if (date == null) {
                     try {
-                        DateFormat df = new SimpleDateFormat(fmt, DateUtils.SWEDISH)
+                        DateFormat df = new SimpleDateFormat(fmt, SWEDISH)
                         df.timeZone = tz
                         df.setLenient(false)
                         date = df.parse(input)
@@ -102,7 +107,7 @@ final class DateUtils {
 
     @CompileStatic
     static String formatDateTime(final Date date, TimeZone tz = UTC) {
-        final DateFormat fmt = new SimpleDateFormat(DATETIME_FORMAT, DateUtils.SWEDISH)
+        final DateFormat fmt = new SimpleDateFormat(DATETIME_FORMAT, SWEDISH)
         fmt.timeZone = tz
         fmt.format(date)
     }
@@ -130,7 +135,7 @@ final class DateUtils {
             DATETIME_FORMATS.each { String fmt ->
                 if (date == null) {
                     try {
-                        DateFormat df = new SimpleDateFormat(fmt, DateUtils.SWEDISH)
+                        DateFormat df = new SimpleDateFormat(fmt, SWEDISH)
                         df.timeZone = tz
                         df.setLenient(false)
                         date = df.parse(input)
@@ -152,7 +157,7 @@ final class DateUtils {
         Date d = null
         if (dateFrom && dateTo) {
             use(groovy.time.TimeCategory) {
-                Duration dur = (Duration)(dateTo - dateFrom)
+                Duration dur = (Duration) (dateTo - dateFrom)
                 d = new Date(dur.toMilliseconds())
             }
         }
@@ -278,7 +283,7 @@ final class DateUtils {
         final StringBuilder s = new StringBuilder()
         if (d != null) {
             if (locale == null) {
-                locale = DateUtils.SWEDISH // TODO handle i18n
+                locale = SWEDISH // TODO handle i18n
             }
             if (d.hours) {
                 s << d.hours.intValue().toString()
@@ -364,6 +369,44 @@ final class DateUtils {
         cal.set(Calendar.SECOND, 59)
         cal.set(Calendar.MILLISECOND, 999)
         return cal.time
+    }
+
+    static List<Date> getMonthSpan(Integer monthOffset = 0, Date referenceDate = new Date()) {
+        final Calendar cal = Calendar.getInstance()
+        cal.setTime(referenceDate)
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        if(monthOffset) {
+            cal.add(Calendar.MONTH, monthOffset)
+        }
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        final Date date1 = cal.getTime()
+        cal.add(Calendar.MONTH, 1)
+        cal.add(Calendar.SECOND, -1); // TODO This is a test, -1 MILLISECOND works on MySQL but not on MSSQL.
+
+        [date1, cal.getTime()]
+    }
+
+    static int getFirstDayOfWeek(Locale locale, TimeZone timezone) {
+        Calendar.getInstance(timezone, locale).getFirstDayOfWeek()
+    }
+
+    static List<String> getMonthNames(Locale locale, TimeZone timezone, boolean shortFormat = false) {
+        def calendar = Calendar.getInstance(timezone, locale)
+        (0..11).collect {
+            calendar.set(Calendar.MONTH, it);
+            calendar.getDisplayName(Calendar.MONTH, shortFormat ? Calendar.SHORT : Calendar.LONG, locale)
+        }
+    }
+
+    static List<String> getDayNames(Locale locale, TimeZone timezone, boolean shortFormat = false) {
+        def calendar = Calendar.getInstance(timezone, locale)
+        [1, 2, 3, 4, 5, 6, 0].collect {
+            calendar.set(Calendar.DAY_OF_WEEK, it);
+            calendar.getDisplayName(Calendar.DAY_OF_WEEK, shortFormat ? Calendar.SHORT : Calendar.LONG, locale)
+        }
     }
 }
 

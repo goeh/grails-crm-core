@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Goran Ehrsson.
+ * Copyright (c) 2014 Goran Ehrsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
     String firstName
     String lastName
     String companyName
+    Long companyId
     String title
     String address
     String telephone
@@ -33,6 +34,7 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
         firstName(maxSize: 40, nullable: true)
         lastName(maxSize: 40, nullable: true)
         companyName(maxSize: 80, nullable: true)
+        companyId(nullable: true)
         title(maxSize: 80, nullable: true)
         address(maxSize: 100, nullable: true)
         telephone(maxSize: 20, nullable: true)
@@ -82,7 +84,7 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
     }
 
     transient Map<String, Object> getDao() {
-        ['firstName', 'lastName', 'companyName', 'title', 'address', 'telephone', 'email', 'number'].inject([:]) { map, prop ->
+        ['firstName', 'lastName', 'companyName', 'companyId', 'title', 'address', 'telephone', 'email', 'number'].inject([:]) { map, prop ->
             def v = this[prop]
             if (v != null) {
                 map[prop] = v

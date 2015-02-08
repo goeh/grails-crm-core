@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 Goran Ehrsson.
+ * Copyright (c) 2014 Goran Ehrsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,9 +21,9 @@ import grails.plugins.crm.core.ApplicationContextHolder
  * GR8 CRM Core Plugin.
  */
 class CrmCoreGrailsPlugin {
-    def groupId = "grails.crm"
-    def version = "1.4.0-SNAPSHOT"
-    def grailsVersion = "2.4 > *"
+    def groupId = ""
+    def version = "2.0.3-SNAPSHOT"
+    def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
     def pluginExcludes = [
@@ -36,9 +36,9 @@ class CrmCoreGrailsPlugin {
     def author = "Goran Ehrsson"
     def authorEmail = "goran@technipelago.se"
     def description = '''\
-GR8 CRM Core Functionality.
+GR8 CRM Core Functionality. See http://gr8crm.github.io for more information.
 '''
-    def documentation = "https://github.com/goeh/grails-crm-core"
+    def documentation = "http://gr8crm.github.io/plugins/crm-core/"
     def license = "APACHE"
     def organization = [name: "Technipelago AB", url: "http://www.technipelago.se/"]
     def issueManagement = [system: "github", url: "https://github.com/goeh/grails-crm-core/issues"]
@@ -55,7 +55,7 @@ GR8 CRM Core Functionality.
 
     def doWithApplicationContext = { applicationContext ->
         if (applicationContext.containsBean("gormSelection")) {
-            // TODO Hack warning: soft reference to selection plugin
+            // TODO Soft reference to selection plugin is kind of ugly.
             applicationContext.getBean("gormSelection").fixedCriteria = { query, params ->
                 if (targetClass.metaClass.respondsTo(null, 'getTenantId')) {
                     eq('tenantId', TenantUtils.tenant)
