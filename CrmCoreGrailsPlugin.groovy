@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Goran Ehrsson.
+ * Copyright (c) 2015 Goran Ehrsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import grails.plugins.crm.core.TenantUtils
+
 import grails.plugins.crm.core.ApplicationContextHolder
+import grails.plugins.crm.core.TenantUtils
 
 /**
  * GR8 CRM Core Plugin.
  */
 class CrmCoreGrailsPlugin {
     def groupId = ""
-    def version = "2.0.3-SNAPSHOT"
+    def version = "2.4.0-SNAPSHOT"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']

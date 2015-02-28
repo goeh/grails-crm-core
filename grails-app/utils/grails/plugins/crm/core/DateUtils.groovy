@@ -45,7 +45,7 @@ final class DateUtils {
 
     @CompileStatic
     static java.sql.Date parseSqlDate(final String input, TimeZone tz = UTC) {
-        Date date = parseDate(input, tz)
+        final Date date = parseDate(input, tz)
         return date != null ? new java.sql.Date(date.clearTime().getTime()) : null
     }
 
@@ -59,7 +59,7 @@ final class DateUtils {
 
     @CompileStatic
     static String formatDate(final Date date, TimeZone tz = UTC) {
-        DateFormat fmt = new SimpleDateFormat(DATE_FORMAT, SWEDISH)
+        final DateFormat fmt = new SimpleDateFormat(DATE_FORMAT, SWEDISH)
         fmt.timeZone = tz
         fmt.format(date)
     }
@@ -84,7 +84,7 @@ final class DateUtils {
         if (input) {
             input = input.replace(' ', ''); // Remove all spaces.
             Exception firstError = null
-            DATE_FORMATS.each { final String fmt ->
+            for(String fmt in DATE_FORMATS) {
                 if (date == null) {
                     try {
                         DateFormat df = new SimpleDateFormat(fmt, SWEDISH)
@@ -132,7 +132,7 @@ final class DateUtils {
         if (input) {
             input = input.replace(' ', ''); // Remove all spaces.
             Exception firstError = null
-            DATETIME_FORMATS.each { String fmt ->
+            for(String fmt in DATETIME_FORMATS) {
                 if (date == null) {
                     try {
                         DateFormat df = new SimpleDateFormat(fmt, SWEDISH)
@@ -350,7 +350,7 @@ final class DateUtils {
 
     @CompileStatic
     static Date endOfWeek(Integer dayOffset = 0, Date date = new Date()) {
-        Calendar cal = Calendar.getInstance()
+        final Calendar cal = Calendar.getInstance()
         cal.setTime(date)
         def firstDayOfWeek = cal.getFirstDayOfWeek()
         if (dayOffset != 0) {
@@ -394,7 +394,7 @@ final class DateUtils {
     }
 
     static List<String> getMonthNames(Locale locale, TimeZone timezone, boolean shortFormat = false) {
-        def calendar = Calendar.getInstance(timezone, locale)
+        final Calendar calendar = Calendar.getInstance(timezone, locale)
         (0..11).collect {
             calendar.set(Calendar.MONTH, it);
             calendar.getDisplayName(Calendar.MONTH, shortFormat ? Calendar.SHORT : Calendar.LONG, locale)
@@ -402,7 +402,7 @@ final class DateUtils {
     }
 
     static List<String> getDayNames(Locale locale, TimeZone timezone, boolean shortFormat = false) {
-        def calendar = Calendar.getInstance(timezone, locale)
+        final Calendar calendar = Calendar.getInstance(timezone, locale)
         [1, 2, 3, 4, 5, 6, 0].collect {
             calendar.set(Calendar.DAY_OF_WEEK, it);
             calendar.getDisplayName(Calendar.DAY_OF_WEEK, shortFormat ? Calendar.SHORT : Calendar.LONG, locale)
