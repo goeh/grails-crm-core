@@ -6,12 +6,12 @@ def pluginDescriptor = projectDir.listFiles().find { it.name.endsWith('GrailsPlu
 
 version = (pluginDescriptor.text =~ /def\s+version\s*=\s*"(.+)"/)[0][1]
 
-def gr8crmDir = new File("../../gr8crm.github.io/plugins")
+def gr8crmDir = System.getenv('GR8CRM_DOCS')
 
 asciidoctor {
     separateOutputDirs false
-    sourceDir = new File("src/docs")
-    outputDir = new File(gr8crmDir, project.name)
+    sourceDir = new File('src/docs')
+    outputDir = new File(gr8crmDir ?: buildDir, project.name)
     options eruby: 'erubis'
     attributes revnumber: project.version, toc: '', idprefix: 'crm-', idseparator: '-', 'source-highlighter': 'prettify'
 }
