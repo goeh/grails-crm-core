@@ -323,7 +323,7 @@ This plugin is licensed with http://www.apache.org/licenses/LICENSE-2.0.html[Apa
 
 == Source Code
 
-The source code for this plugin is available at https://github.com/goeh/grails-crm-core
+The source code for this plugin is available at {gr8source}
 
 == Contributing
 

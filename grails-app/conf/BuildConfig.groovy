@@ -3,8 +3,6 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 
-grails.project.repos.default = "crm"
-
 grails.project.fork = [
     //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
     test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
