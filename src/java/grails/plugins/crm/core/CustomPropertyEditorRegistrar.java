@@ -18,7 +18,6 @@ package grails.plugins.crm.core;
 import groovy.transform.CompileStatic;
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.PropertyEditorRegistry;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import java.text.SimpleDateFormat;
 
@@ -30,9 +29,6 @@ import java.text.SimpleDateFormat;
 public final class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
 
     public void registerCustomEditors(PropertyEditorRegistry registry) {
-
-        // We want all strings to be trimmed and empty strings converted to null.
-        registry.registerCustomEditor(String.class, new StringTrimmerEditor(true));
 
         registry.registerCustomEditor(java.util.Date.class, new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
         registry.registerCustomEditor(java.sql.Date.class, new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true, true));
