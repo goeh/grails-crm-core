@@ -9,6 +9,7 @@ version = (pluginDescriptor.text =~ /def\s+version\s*=\s*"(.+)"/)[0][1]
 def gr8crmDir = System.getenv('GR8CRM_DOCS')
 
 asciidoctor {
+    inputs.file pluginDescriptor
     separateOutputDirs false
     sourceDir = new File('src/docs')
     outputDir = new File(gr8crmDir ?: buildDir, project.name)
