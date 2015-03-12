@@ -55,6 +55,12 @@ public class UuidASTTransformation implements ASTTransformation {
         for (ASTNode astNode : nodes) {
             if (astNode instanceof ClassNode) {
                 ClassNode theClass = (ClassNode) astNode;
+                AnnotationNode uuidDefinition = GrailsASTUtils.findAnnotation(ClassHelper.make(UuidEntity.class), theClass.getAnnotations());
+                Expression indexExpr = uuidDefinition.getMember("index");
+                Boolean addIndex = false;
+                if(indexExpr != null) {
+                    addIndex = ((ConstantExpression) indexExpr).isTrueExpression();
+                }
 
                 if (!GrailsASTUtils.hasOrInheritsProperty(theClass, "guid")) {
                     System.out.println("Adding guid field to class " + theClass.getName());
@@ -76,6 +82,27 @@ public class UuidASTTransformation implements ASTTransformation {
                         ClosureExpression constraintsClosure = new ClosureExpression(null, closureBlock);
                         theClass.addProperty("constraints", Modifier.STATIC | Modifier.PUBLIC, ClassHelper.OBJECT_TYPE, constraintsClosure, null, null);
 
+                    }
+
+                    if(addIndex) {
+                        System.out.println("Adding guid index: " + theClass.getNameWithoutPackage().replaceAll("\\B([A-Z])", "_$1").toLowerCase()+"_guid_idx to class " + theClass.getName());
+
+                        Statement guidMappingExpression = createMapping("guid", "index", theClass.getNameWithoutPackage().replaceAll("\\B([A-Z])", "_$1").toLowerCase()+"_guid_idx"); 
+                        
+                        PropertyNode mapping = theClass.getProperty("mapping");
+                        if (mapping != null) {
+                            if (mapping.getInitialExpression() instanceof ClosureExpression) {
+                                ClosureExpression ce = (ClosureExpression) mapping.getInitialExpression();
+                                ((BlockStatement) ce.getCode()).addStatement(guidMappingExpression);
+                            } else {
+                                System.err.println("Do not know how to add mapping expression to non ClosureExpression " + mapping.getInitialExpression());
+                            }
+                        } else {
+                            Statement[] mappingStatement = {guidMappingExpression};
+                            BlockStatement closureBlock = new BlockStatement(mappingStatement, null);
+                            ClosureExpression mappingClosure = new ClosureExpression(null, closureBlock);
+                            theClass.addProperty("mapping", Modifier.STATIC | Modifier.PUBLIC, ClassHelper.OBJECT_TYPE, mappingClosure, null, null);
+                        }
                     }
 
                     createHashCode(theClass);
@@ -100,6 +127,14 @@ public class UuidASTTransformation implements ASTTransformation {
         NamedArgumentListExpression nale = new NamedArgumentListExpression();
         nale.addMapEntryExpression(new MapEntryExpression(new ConstantExpression("maxSize"), new ConstantExpression(36)));
         nale.addMapEntryExpression(new MapEntryExpression(new ConstantExpression("blank"), ConstantExpression.FALSE));
+
+        MethodCallExpression mce = new MethodCallExpression(VariableExpression.THIS_EXPRESSION, propertyName, nale);
+        return new ExpressionStatement(mce);
+    }
+
+    private Statement createMapping(String propertyName, String mappingName, String mappingValue) {
+        NamedArgumentListExpression nale = new NamedArgumentListExpression();
+        nale.addMapEntryExpression(new MapEntryExpression(new ConstantExpression(mappingName), new ConstantExpression(mappingValue)));
 
         MethodCallExpression mce = new MethodCallExpression(VariableExpression.THIS_EXPRESSION, propertyName, nale);
         return new ExpressionStatement(mce);

@@ -25,4 +25,5 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 @GroovyASTTransformationClass("grails.plugins.crm.core.UuidASTTransformation")
 public @interface UuidEntity {
+     boolean index() default false;
 }
