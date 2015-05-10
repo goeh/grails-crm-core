@@ -304,6 +304,8 @@ include::{projectdir}/src/docs/samples/AuditEntity.groovy[]
 This transformation adds a `String guid` property to the domain class.
 The property is set to `UUID.randomUUID().toString()` when the domain class is instantiated.
 
+A database index can be created on the `guid` column by speficying `index = true` in the annotation.
+
 [source,groovy]
 .MyEvent.groovy
 ----
@@ -312,6 +314,7 @@ include::{projectdir}/src/docs/samples/UuidEntity.groovy[]
 
 == Changes
 
+2.4.1:: Added support for database index in `UuidEntity` domain classes (thanks aberbenni).
 2.4.0:: First version compatible with Grails 2.4.4.
 2.0.2:: New exception type CrmValidationException to use in services that persist domain instances.
 2.0.1:: Interface `CrmContactInformation` changed. New getter method `Long getCompanyId()`.
