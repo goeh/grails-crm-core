@@ -80,7 +80,7 @@ public class UuidASTTransformation implements ASTTransformation {
                     } else {
                         Statement[] constraintsStatement = {guidConstraintExpression};
                         BlockStatement closureBlock = new BlockStatement(constraintsStatement, null);
-                        ClosureExpression constraintsClosure = new ClosureExpression(null, closureBlock);
+                        ClosureExpression constraintsClosure = new ClosureExpression(Parameter.EMPTY_ARRAY, closureBlock);
                         theClass.addProperty("constraints", Modifier.STATIC | Modifier.PUBLIC, ClassHelper.OBJECT_TYPE, constraintsClosure, null, null);
 
                     }
@@ -88,8 +88,8 @@ public class UuidASTTransformation implements ASTTransformation {
                     if(addIndex) {
                         System.out.println("Adding guid index: " + theClass.getNameWithoutPackage().replaceAll("\\B([A-Z])", "_$1").toLowerCase()+"_guid_idx to class " + theClass.getName());
 
-                        Statement guidMappingExpression = createMapping("guid", "index", theClass.getNameWithoutPackage().replaceAll("\\B([A-Z])", "_$1").toLowerCase()+"_guid_idx"); 
-                        
+                        Statement guidMappingExpression = createMapping("guid", "index", theClass.getNameWithoutPackage().replaceAll("\\B([A-Z])", "_$1").toLowerCase()+"_guid_idx");
+
                         PropertyNode mapping = theClass.getProperty("mapping");
                         if (mapping != null) {
                             if (mapping.getInitialExpression() instanceof ClosureExpression) {
@@ -101,7 +101,7 @@ public class UuidASTTransformation implements ASTTransformation {
                         } else {
                             Statement[] mappingStatement = {guidMappingExpression};
                             BlockStatement closureBlock = new BlockStatement(mappingStatement, null);
-                            ClosureExpression mappingClosure = new ClosureExpression(null, closureBlock);
+                            ClosureExpression mappingClosure = new ClosureExpression(Parameter.EMPTY_ARRAY, closureBlock);
                             theClass.addProperty("mapping", Modifier.STATIC | Modifier.PUBLIC, ClassHelper.OBJECT_TYPE, mappingClosure, null, null);
                         }
                     }
