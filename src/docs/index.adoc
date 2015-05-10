@@ -312,6 +312,7 @@ include::{projectdir}/src/docs/samples/UuidEntity.groovy[]
 
 == Changes
 
+2.0.2:: Added custom exception type `CrmValidationException`.
 2.0.1:: Interface `CrmContactInformation` changed. New getter method `Long getCompanyId()`.
 2.0.0:: First public release
 
