@@ -9,6 +9,7 @@ stacktrace.log
 /build
 /.gradle
 /*.zip
+/*.zip.sha1
 /plugin.xml
 /*.log
 /*DB.*
