@@ -19,6 +19,7 @@ import groovy.lang.ExpandoMetaClass;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.ast.PropertyNode;
 import org.codehaus.groovy.ast.expr.*;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
@@ -65,7 +66,7 @@ public class TenantASTTransformation implements ASTTransformation {
                     } else {
                         Statement[] constraintsStatement = {tenantConstraintExpression};
                         BlockStatement closureBlock = new BlockStatement(constraintsStatement, null);
-                        ClosureExpression constraintsClosure = new ClosureExpression(null, closureBlock);
+                        ClosureExpression constraintsClosure = new ClosureExpression(Parameter.EMPTY_ARRAY, closureBlock);
                         theClass.addProperty("constraints", Modifier.STATIC | Modifier.PUBLIC, ClassHelper.OBJECT_TYPE, constraintsClosure, null, null);
 
                     }
