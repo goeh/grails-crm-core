@@ -23,13 +23,14 @@ import grails.plugins.crm.core.TenantUtils
  */
 class CrmCoreGrailsPlugin {
     def groupId = ""
-    def version = "2.4.1"
+    def version = "2.4.2-SNAPSHOT"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
     def pluginExcludes = [
             "grails-app/views/error.gsp",
             "grails-app/domain/grails/plugins/crm/core/TestLookupEntity.groovy",
+            "grails-app/domain/grails/plugins/crm/core/TestUuidEntity.groovy",
             "grails-app/services/grails/plugins/crm/core/TestSecurityService.groovy",
             "src/groovy/grails/plugins/crm/core/TestSecurityDelegate.groovy"
     ]
