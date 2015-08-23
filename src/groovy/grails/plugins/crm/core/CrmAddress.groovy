@@ -21,7 +21,7 @@ package grails.plugins.crm.core
  * @author Goran Ehrsson
  *
  */
-abstract class CrmAddress {
+abstract class CrmAddress implements CrmAddressInformation {
 
     String address1 // Street Name
     String address2

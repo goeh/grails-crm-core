@@ -19,13 +19,12 @@ package grails.plugins.crm.core
 /**
  * Embedded contact information.
  */
-class CrmEmbeddedContact implements CrmContactInformation, Serializable {
+class CrmEmbeddedContact extends CrmAddress implements CrmContactInformation, Serializable {
     String firstName
     String lastName
     String companyName
     Long companyId
     String title
-    String address
     String telephone
     String email
     String number
@@ -36,13 +35,35 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
         companyName(maxSize: 80, nullable: true)
         companyId(nullable: true)
         title(maxSize: 80, nullable: true)
-        address(maxSize: 100, nullable: true)
         telephone(maxSize: 20, nullable: true)
         email(maxSize: 80, nullable: true, email: true)
         number(maxSize: 40, nullable: true)
     }
 
-    static transients = ['id', 'name', 'fullName', 'fullAddress', 'dao']
+    static transients = ['id', 'name', 'fullName', 'fullAddress', 'addressInformation', 'dao'] + CrmAddress.transients
+
+    CrmEmbeddedContact() {
+    }
+
+    CrmEmbeddedContact(CrmContactInformation contactInfo) {
+        firstName = contactInfo.firstName
+        lastName = contactInfo.lastName
+        companyName = contactInfo.companyName
+        title = contactInfo.title
+        telephone = contactInfo.telephone
+        email = contactInfo.email
+        number = contactInfo.number
+
+        def addr = contactInfo.getAddressInformation()
+        if(addr != null) {
+            address1 = addr.address1
+            address2 = addr.address2
+            address3 = addr.address3
+            postalCode = addr.postalCode
+            city = addr.city
+            country = addr.country
+        }
+    }
 
     @Override
     String toString() {
@@ -53,6 +74,7 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
         null
     }
 
+    @Override
     transient String getName() {
         def s = new StringBuilder()
         if (firstName) {
@@ -67,6 +89,7 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
         s.toString()
     }
 
+    @Override
     transient String getFullName() {
         def s = new StringBuilder()
         s << getName()
@@ -80,16 +103,26 @@ class CrmEmbeddedContact implements CrmContactInformation, Serializable {
     }
 
     transient String getFullAddress() {
-        address
+        getAddress(true)
+    }
+
+    @Override
+    transient CrmAddressInformation getAddressInformation() {
+        this
     }
 
     transient Map<String, Object> getDao() {
-        ['firstName', 'lastName', 'companyName', 'companyId', 'title', 'address', 'telephone', 'email', 'number'].inject([:]) { map, prop ->
+        def result = ['firstName', 'lastName', 'companyName', 'companyId', 'title', 'telephone', 'email', 'number'].inject(super.getDao()) { map, prop ->
             def v = this[prop]
             if (v != null) {
                 map[prop] = v
             }
             map
         }
+        result.name = getName()
+        result.fullName = getFullName()
+        result.fullAddress = getFullAddress()
+
+        result
     }
 }
