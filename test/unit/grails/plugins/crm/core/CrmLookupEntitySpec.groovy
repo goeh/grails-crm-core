@@ -28,6 +28,16 @@ class CrmLookupEntitySpec extends Specification {
         new TestLookupEntity(name: "foo").toString() == 'foo'
     }
 
+    def "test equals(null)"() {
+        expect:
+        new TestLookupEntity(name: "foo").equals(null) == false
+    }
+
+    def "test equals(SomeOtherType)"() {
+        expect:
+        new TestLookupEntity(name: "foo").equals(new Date()) == false
+    }
+
     def "test equals"() {
         when:
         def t1 = new TestLookupEntity(orderIndex: 1, name: "foo")

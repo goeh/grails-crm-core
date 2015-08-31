@@ -78,7 +78,7 @@ abstract class CrmLookupEntity {
     @Override
     boolean equals(o) {
         if (this.is(o)) return true
-        //if (getClass() != o.class) return false
+        if (o == null || ! getClass().isAssignableFrom(o.class)) return false
         // TODO How can we handle Hibernate proxies here without importing org.hibernate?
         // grails.plugins.crm.order.CrmOrderStatus_$$_javassist_7
         // grails.plugins.crm.order.CrmOrderStatus
