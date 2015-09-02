@@ -21,7 +21,7 @@ package grails.plugins.crm.core
  * @author Goran Ehrsson
  *
  */
-abstract class CrmAddress implements CrmAddressInformation {
+abstract class CrmAddress implements CrmMutableAddressInformation {
 
     String address1 // Street Name
     String address2
@@ -85,6 +85,13 @@ abstract class CrmAddress implements CrmAddressInformation {
         }
     }
 
+    void copyFrom(final CrmAddressInformation source) {
+        for(p in CrmAddressInformation.ADDRESS_PROPERTIES) {
+            this[p] = source[p]
+        }
+    }
+
+    @Override
     transient boolean isEmpty() {
         this.toMap().isEmpty()
     }

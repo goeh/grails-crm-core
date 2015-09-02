@@ -41,25 +41,36 @@ class CrmAddressSpec extends Specification {
         def a1 = new CrmEmbeddedAddress(address1: "Short Street 2", postalCode: "12345", city: "Smallville")
         def a2 = new CrmEmbeddedAddress()
         def a3 = new CrmEmbeddedAddress(a1)
-        def a4 = a1.copy()
+        def a4 = new CrmEmbeddedAddress()
+        def a5 = a1.copy()
 
         when:
         a1.copyTo(a2)
+        a4.copyFrom(a1)
 
         then:
         a1.address1 == a1.address1
         a2.address1 == a1.address1
         a3.address1 == a1.address1
         a4.address1 == a1.address1
+        a5.address1 == a1.address1
 
         a1.postalCode == a1.postalCode
         a2.postalCode == a1.postalCode
         a3.postalCode == a1.postalCode
         a4.postalCode == a1.postalCode
+        a5.postalCode == a1.postalCode
 
         a1.city == a1.city
         a2.city == a1.city
         a3.city == a1.city
         a4.city == a1.city
+        a5.city == a1.city
+    }
+
+    def "isEmpty method"() {
+        expect:
+        new CrmEmbeddedAddress().isEmpty()
+        !new CrmEmbeddedAddress(postalCode: '0').isEmpty()
     }
 }

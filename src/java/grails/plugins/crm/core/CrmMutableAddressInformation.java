@@ -17,28 +17,21 @@
 package grails.plugins.crm.core;
 
 /**
- * Address information.
+ * Address information that can be changed (using setters).
  */
-public interface CrmAddressInformation {
+public interface CrmMutableAddressInformation extends CrmAddressInformation {
 
-    public static final String[] ADDRESS_PROPERTIES = new String[]{"address1", "address2", "address3", "postalCode", "city", "country"};
+    void setAddress1(String arg);
 
-    String getAddress1();
+    void setAddress2(String arg);
 
-    String getAddress2();
+    void setAddress3(String arg);
 
-    String getAddress3();
+    void setPostalCode(String arg);
 
-    String getPostalCode();
+    void setCity(String arg);
 
-    String getCity();
+    void setCountry(String arg);
 
-    String getCountry();
-
-    /**
-     * Returns true if all address properties are blank.
-     *
-     * @return
-     */
-    boolean isEmpty();
+    void copyFrom(CrmAddressInformation source);
 }

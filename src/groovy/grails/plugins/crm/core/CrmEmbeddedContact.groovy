@@ -19,7 +19,7 @@ package grails.plugins.crm.core
 /**
  * Embedded contact information.
  */
-class CrmEmbeddedContact extends CrmAddress implements CrmContactInformation, Serializable {
+class CrmEmbeddedContact extends CrmAddress implements CrmMutableContactInformation, Serializable {
     String firstName
     String lastName
     String companyName
@@ -109,6 +109,25 @@ class CrmEmbeddedContact extends CrmAddress implements CrmContactInformation, Se
     @Override
     transient CrmAddressInformation getAddressInformation() {
         this
+    }
+
+    @Override
+    void setAddressInformation(CrmAddressInformation arg) {
+        if(arg == null) {
+            this.address1 = null
+            this.address2 = null
+            this.address3 = null
+            this.postalCode = null
+            this.city = null
+            this.country = null
+        } else {
+            this.address1 = arg.address1
+            this.address2 = arg.address2
+            this.address3 = arg.address3
+            this.postalCode = arg.postalCode
+            this.city = arg.city
+            this.country = arg.country
+        }
     }
 
     transient Map<String, Object> getDao() {
