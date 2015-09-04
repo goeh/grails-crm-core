@@ -73,4 +73,21 @@ class CrmAddressSpec extends Specification {
         new CrmEmbeddedAddress().isEmpty()
         !new CrmEmbeddedAddress(postalCode: '0').isEmpty()
     }
+
+    def "empty address as string"() {
+        expect:
+        new CrmEmbeddedAddress().getAddress() == ''
+    }
+
+    def "full address as string"() {
+        expect:
+        new CrmEmbeddedAddress(
+                address1: "1234 Groovy Street",
+                address2: "P.O. Box 872",
+                address3: "Westwood",
+                postalCode: "55555",
+                city:"Springville",
+                country:"USA"
+        ).getAddress() == '1234 Groovy Street, P.O. Box 872, Westwood, 55555 Springville, USA'
+    }
 }
