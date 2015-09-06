@@ -49,7 +49,7 @@ public class CrmTheme implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
+        final StringBuilder s = new StringBuilder();
         s.append(name);
         s.append('@');
         s.append(tenant.toString());

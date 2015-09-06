@@ -28,6 +28,15 @@ class CrmThemeSpec extends Specification {
         new CrmTheme('foo', 42L).toString() == 'foo@42'
     }
 
+    def "test getters"() {
+        when:
+        def t = new CrmTheme('foo', 42L)
+
+        then:
+        t.name == 'foo'
+        t.tenant == 42L
+    }
+
     def "test null arguments"() {
         when:
         new CrmTheme(null, 42)
@@ -47,9 +56,12 @@ class CrmThemeSpec extends Specification {
     def "test equals"() {
         when:
         def reference = new CrmTheme('foo', 42L)
+        def other = reference
 
         then:
-        reference == reference
+        reference != null
+        reference == other
+        reference != new Date()
         reference == new CrmTheme('foo', 42L)
         reference != new CrmTheme('foo', 43L)
         reference != new CrmTheme('bar', 42L)
