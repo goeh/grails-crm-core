@@ -314,6 +314,7 @@ include::{projectdir}/src/docs/samples/UuidEntity.groovy[]
 
 == Changes
 
+2.4.2:: Added interfaces for working with address entities, CrmAddressInformation and CrmMutableAddressInformation.
 2.4.1:: Added support for database index in `UuidEntity` domain classes (thanks aberbenni).
 2.4.0:: First version compatible with Grails 2.4.4.
 2.0.2:: New exception type CrmValidationException to use in services that persist domain instances.
