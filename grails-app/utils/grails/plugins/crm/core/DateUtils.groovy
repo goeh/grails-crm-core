@@ -79,7 +79,10 @@ final class DateUtils {
     }
 
     @CompileStatic
-    static Date parseDate(String input, TimeZone tz = UTC) {
+    static Date parseDate(String input, TimeZone tz = null) {
+        if(tz == null) {
+            tz = UTC
+        }
         Date date = null
         if (input) {
             input = input.replace(' ', ''); // Remove all spaces.

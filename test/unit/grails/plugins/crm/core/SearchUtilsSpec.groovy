@@ -18,6 +18,9 @@ package grails.plugins.crm.core
 
 import spock.lang.Specification
 
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+
 /**
  * Test the SearchUtils class.
  */
@@ -240,5 +243,35 @@ class SearchUtilsSpec extends Specification {
 
         then:
         crit.success
+    }
+
+    def "extended date query"() {
+        given:
+        DateFormat dateFormat = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss', new Locale('en', 'GB'))
+        dateFormat.setTimeZone(TimeZone.getTimeZone('UTC'));
+        Calendar reference = Calendar.getInstance(dateFormat.getTimeZone())
+        reference.set(Calendar.YEAR, 2016)
+        reference.set(Calendar.MONTH, Calendar.MAY)
+        reference.set(Calendar.DAY_OF_MONTH, 20)
+        reference.set(Calendar.HOUR_OF_DAY, 12)
+        reference.set(Calendar.MINUTE, 45)
+        reference.set(Calendar.SECOND, 0)
+        reference.set(Calendar.MILLISECOND, 0)
+
+        expect:
+        output == dateFormat.format(SearchUtils.parseDateQuery(input, reference))
+
+        where:
+        input | output
+        '2016-05-01' | '2016-05-01 00:00:00'
+        '2016-05-31' | '2016-05-31 00:00:00'
+        '-0d'        | '2016-05-20 12:45:00'
+        '+0d'        | '2016-05-20 12:45:00'
+        '-1d'        | '2016-05-19 12:45:00'
+        '+1d'        | '2016-05-21 12:45:00'
+        '-2w'        | '2016-05-06 12:45:00'
+        '+2w'        | '2016-06-03 12:45:00'
+        '-9m'        | '2015-08-20 12:45:00'
+        '+9m'        | '2017-02-20 12:45:00'
     }
 }
