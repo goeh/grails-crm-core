@@ -23,7 +23,7 @@ import grails.plugins.crm.core.TenantUtils
  */
 class CrmCoreGrailsPlugin {
     def groupId = ""
-    def version = "2.4.2"
+    def version = "2.4.3-SNAPSHOT"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['controllers']
