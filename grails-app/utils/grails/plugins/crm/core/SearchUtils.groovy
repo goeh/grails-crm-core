@@ -16,7 +16,9 @@
 package grails.plugins.crm.core
 
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
+import javax.servlet.http.HttpServletRequest
 import java.text.DecimalFormat
 import java.util.regex.Pattern
 
@@ -230,5 +232,15 @@ final class SearchUtils {
         cl.delegate = criteriaDelegate
         cl.resolveStrategy = Closure.DELEGATE_FIRST
         cl(fromQuery, toQuery, startProp, endProp, timezone)
+    }
+
+    public static int getPaginationSize(HttpServletRequest request, Integer size, Integer defaultSize = 10, String key = 'pagination') {
+        if(size) {
+            size = Math.min(size, 1000)
+        } else {
+            size = WebUtils.getTenantData(request, key) ?: defaultSize
+        }
+        WebUtils.setTenantData(request, key, size)
+        return size
     }
 }
