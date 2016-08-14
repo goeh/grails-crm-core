@@ -3,7 +3,6 @@
 *Db.script
 .settings
 stacktrace.log
-/wrapper
 /.idea
 /*.iml
 /build
