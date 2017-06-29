@@ -30,9 +30,9 @@ class CrmEmbeddedContact extends CrmAddress implements CrmMutableContactInformat
     String number
 
     static constraints = {
-        firstName(maxSize: 40, nullable: true)
-        lastName(maxSize: 40, nullable: true)
-        companyName(maxSize: 80, nullable: true)
+        firstName(maxSize: 64, nullable: true)
+        lastName(maxSize: 64, nullable: true)
+        companyName(maxSize: 128, nullable: true)
         companyId(nullable: true)
         title(maxSize: 80, nullable: true)
         telephone(maxSize: 20, nullable: true)

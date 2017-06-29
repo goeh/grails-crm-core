@@ -35,10 +35,10 @@ abstract class CrmAddress implements CrmMutableAddressInformation {
     Float longitude
 
     static constraints = {
-        address1(maxSize: 64, nullable: true, blank: false)
-        address2(maxSize: 64, nullable: true, blank: false)
-        address3(maxSize: 64, nullable: true, blank: false)
-        postalCode(maxSize: 16, nullable: true, blank: false)
+        address1(maxSize: 128, nullable: true, blank: false)
+        address2(maxSize: 128, nullable: true, blank: false)
+        address3(maxSize: 128, nullable: true, blank: false)
+        postalCode(maxSize: 32, nullable: true, blank: false)
         city(maxSize: 64, nullable: true, blank: false)
         region(maxSize: 32, nullable: true, blank: false)
         country(maxSize: 64, nullable: true, blank: false)

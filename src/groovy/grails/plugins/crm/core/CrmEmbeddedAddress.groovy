@@ -26,7 +26,7 @@ class CrmEmbeddedAddress extends CrmAddress {
     String addressee
 
     static constraints = {
-        addressee(maxSize: 80, nullable: true, blank: false)
+        addressee(maxSize: 128, nullable: true, blank: false)
     }
 
     static transients = ['name'] + CrmAddress.transients
