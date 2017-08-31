@@ -6,7 +6,7 @@ Göran Ehrsson <goran@technipelago.se>
 :numbered:
 :icons: font
 :imagesdir: ./images
-:source-highlighter: prettify
+:source-highlighter: coderay
 :homepage: http://gr8crm.github.io
 :gr8crm: GR8 CRM
 :gr8source: https://github.com/goeh/grails-crm-core
@@ -314,6 +314,7 @@ include::{projectdir}/src/docs/samples/UuidEntity.groovy[]
 
 == Changes
 
+2.4.4:: Increased length of address columns -> *db migration!*
 2.4.3:: Added method `SearchUtils#dateQuery()` and `SearchUtils#getPaginationSize()`.
 2.4.2:: Added interfaces for working with address entities, CrmAddressInformation and CrmMutableAddressInformation.
 2.4.1:: Added support for database index in `UuidEntity` domain classes (thanks aberbenni).
