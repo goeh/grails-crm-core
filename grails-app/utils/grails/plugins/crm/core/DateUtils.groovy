@@ -109,6 +109,16 @@ final class DateUtils {
     }
 
     @CompileStatic
+    static Date parseDateSafe(String input, TimeZone tz = null) {
+        try {
+            return parseDate(input, tz)
+        } catch(Exception e) {
+            // Ignore.
+        }
+        return null
+    }
+
+    @CompileStatic
     static String formatDateTime(final Date date, TimeZone tz = UTC) {
         final DateFormat fmt = new SimpleDateFormat(DATETIME_FORMAT, SWEDISH)
         fmt.timeZone = tz
@@ -154,6 +164,15 @@ final class DateUtils {
             }
         }
         return date
+    }
+
+    static Date parseDateTimeSafe(String input, TimeZone tz = UTC) {
+        try {
+            return parseDateTime(input, tz)
+        } catch(Exception t) {
+            // Ignore.
+        }
+        return null
     }
 
     static Date duration(final Date dateFrom, final Date dateTo) {
